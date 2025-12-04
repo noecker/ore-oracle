@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "mod-template",
+  "version": "${version}",
+  "name": "Mod Template",
+  "description": "A template for creating Fabric mods following Teeknox conventions",
+  "authors": ["Your Name"],
+  "contact": {
+    "homepage": "https://github.com/yourusername/mod-template",
+    "sources": "https://github.com/yourusername/mod-template"
+  },
+  "license": "MIT",
+  "icon": "assets/mod-template/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "main": ["com.teeknox.modtemplate.ModTemplateMod"],
+    "client": ["com.teeknox.modtemplate.ModTemplateClient"],
+    "modmenu": ["com.teeknox.modtemplate.config.ModMenuIntegration"]
+  },
+  "mixins": [
+    "mod-template.client.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.18.0",
+    "minecraft": "~1.21.10",
+    "java": ">=21",
+    "fabric-api": "*"
+  },
+  "suggests": {
+    "modmenu": "*"
+  }
+}
