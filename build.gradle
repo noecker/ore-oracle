@@ -23,7 +23,7 @@ loom {
     splitEnvironmentSourceSets()
 
     mods {
-        "mod-template" {
+        "ore-oracle" {
             sourceSet sourceSets.main
             sourceSet sourceSets.client
         }

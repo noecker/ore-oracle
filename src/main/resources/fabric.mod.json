@@ -1,24 +1,24 @@
 {
   "schemaVersion": 1,
-  "id": "mod-template",
+  "id": "ore-oracle",
   "version": "${version}",
-  "name": "Mod Template",
-  "description": "A template for creating Fabric mods following Teeknox conventions",
-  "authors": ["Your Name"],
+  "name": "Ore Oracle",
+  "description": "Shows ore probability at your current Y-level with color-coded indicators",
+  "authors": ["Teeknox"],
   "contact": {
-    "homepage": "https://github.com/yourusername/mod-template",
-    "sources": "https://github.com/yourusername/mod-template"
+    "homepage": "https://github.com/teeknox/ore-oracle",
+    "sources": "https://github.com/teeknox/ore-oracle"
   },
   "license": "MIT",
-  "icon": "assets/mod-template/icon.png",
+  "icon": "assets/ore-oracle/icon.png",
   "environment": "client",
   "entrypoints": {
-    "main": ["com.teeknox.modtemplate.ModTemplateMod"],
-    "client": ["com.teeknox.modtemplate.ModTemplateClient"],
-    "modmenu": ["com.teeknox.modtemplate.config.ModMenuIntegration"]
+    "main": ["com.teeknox.oreoracle.OreOracleMod"],
+    "client": ["com.teeknox.oreoracle.OreOracleClient"],
+    "modmenu": ["com.teeknox.oreoracle.config.ModMenuIntegration"]
   },
   "mixins": [
-    "mod-template.client.mixins.json"
+    "ore-oracle.client.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=0.18.0",

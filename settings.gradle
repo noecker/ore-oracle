@@ -9,4 +9,4 @@ pluginManagement {
     }
 }
 
-rootProject.name = 'mod-template'
+rootProject.name = 'ore-oracle'

@@ -211,30 +211,407 @@ Follow Teeknox STYLE_GUIDE.md:
 
 ---
 
-## Ore Distribution Data (To Be Filled In)
+## Ore Distribution Data
 
-*This section will be populated with hardcoded ore distribution data from provided charts/images.*
+*Data extracted from ore distribution charts for Java Edition 1.21.x. Standard and Deepslate variants are combined into single probability curves respecting Y-axis positions.*
+
+### Distribution Types (from ore-chart)
+
+- **Uniform:** Same chance of finding ore regardless of height within range
+- **Triangular:** More likely to find ore at center of height range; halfway to edges = half as likely
 
 ### Overworld Ores
 
-| Ore | Min Y | Max Y | Peak Y | Green Zones | Notes |
-|-----|-------|-------|--------|-------------|-------|
-| Coal | | | | | |
-| Copper | | | | | |
-| Iron | | | | | |
-| Gold | | | | | |
-| Redstone | | | | | |
-| Emerald | | | | | Mountain biomes only |
-| Lapis | | | | | |
-| Diamond | | | | | |
+#### Coal (Combined: Coal Ore + Deepslate Coal Ore)
+
+| Property | Value |
+|----------|-------|
+| **Total Range** | Y: 0 to 320 (Coal Ore: 136-320 uniform + 0-192 triangular) |
+| **Peak Y** | ~96 (mountains) or ~48 (triangular peak) |
+| **Peak Value** | ~650 per 100k blocks (combined) |
+| **Distribution** | Two distributions: Upper (uniform 136-320), Lower (triangular 0-192 peak at 96) |
+| **Green Zone** | Y: 40-136 (highest combined density) |
+| **Notes** | Less terrain higher up for ores to generate; Deepslate Coal only exists Y: 0-8 (very small ~40 peak) |
+
+**Approximate Combined Distribution Curve:**
+- Y 0-8: ~40 (deepslate only)
+- Y 8-20: ~100-300 (ramping up)
+- Y 20-40: ~300-500
+- Y 40-60: ~500-650 (peak zone)
+- Y 60-96: ~450-650
+- Y 96-136: ~400-200 (declining)
+- Y 136-192: ~150-50 (upper uniform thinning)
+- Y 192-320: ~20-5 (sparse)
+
+#### Copper (Combined: Copper Ore + Deepslate Copper Ore)
+
+| Property | Value |
+|----------|-------|
+| **Total Range** | Y: -16 to 112 |
+| **Peak Y** | 48 |
+| **Peak Value** | ~750 per 100k blocks (Copper Ore) + ~220 (Deepslate at Y=0) |
+| **Distribution** | Triangular centered at Y=48 |
+| **Green Zone** | Y: 32-64 |
+| **Notes** | Large ore veins generate, mixed with granite above Y=0. Deepslate Copper only Y: -16 to 16 with peak ~220 at Y=0 |
+
+**Approximate Combined Distribution Curve:**
+- Y -16 to -8: ~50-100
+- Y -8 to 0: ~100-220 (deepslate peak)
+- Y 0-16: ~220-400 (transition zone, both variants)
+- Y 16-32: ~400-600
+- Y 32-48: ~600-750 (approaching peak)
+- Y 48: ~750 (peak)
+- Y 48-64: ~750-600
+- Y 64-80: ~600-300
+- Y 80-96: ~300-100
+- Y 96-112: ~100-0
+
+#### Iron (Combined: Iron Ore + Deepslate Iron Ore)
+
+| Property | Value |
+|----------|-------|
+| **Total Range** | Y: -64 to 384 |
+| **Peak Y** | 16 (main triangular), 256 (upper triangular) |
+| **Peak Value** | ~560 (Iron Ore at Y=16) + ~330 (Deepslate at Y=-8) |
+| **Distribution** | Three distributions: Upper (80-384 triangular), Middle (-24 to 56 triangular), Small (-64 to 72 uniform) |
+| **Green Zone** | Y: -24 to 56 (main concentration) |
+| **Notes** | More generates higher but less terrain. Large ore veins below Y=0 mixed with tuff. Mountains (Y=256) secondary peak |
+
+**Approximate Combined Distribution Curve:**
+- Y -64 to -56: ~80-90 (deepslate uniform)
+- Y -56 to -40: ~90-100
+- Y -40 to -24: ~100-150
+- Y -24 to -8: ~150-330 (deepslate triangular peak)
+- Y -8 to 0: ~330-400
+- Y 0-16: ~400-560 (main peak zone)
+- Y 16-32: ~560-400
+- Y 32-56: ~400-150
+- Y 56-80: ~150-50
+- Y 80-120: ~30-20 (sparse)
+- Y 120-256: ~10-20 (slight increase at mountains)
+- Y 256+: tiny amounts in mountains
+
+#### Gold (Combined: Gold Ore + Deepslate Gold Ore)
+
+| Property | Value |
+|----------|-------|
+| **Total Range** | Y: -64 to 32 (normal), 32-256 (badlands only) |
+| **Peak Y** | -16 |
+| **Peak Value** | ~170 (Deepslate) + ~80 (Gold Ore) = ~250 combined at Y=-16 |
+| **Distribution** | Triangular -64 to 32, 50% buried. Additional uniform in badlands 32-256 |
+| **Green Zone** | Y: -48 to 0 |
+| **Notes** | Best layer Y=-16. Badlands biome has extra gold 32-256 uniform. Gold ore (non-deepslate) only Y: 0-32 |
+
+**Approximate Combined Distribution Curve:**
+- Y -64: ~0
+- Y -56 to -48: ~60-100
+- Y -48 to -32: ~100-150
+- Y -32 to -16: ~150-250 (peak)
+- Y -16 to 0: ~250-170
+- Y 0-16: ~80-40 (gold ore only)
+- Y 16-32: ~40-10
+- Y 32+: 0 (except badlands: ~8 uniform to Y=256)
+
+#### Diamond (Combined: Diamond Ore + Deepslate Diamond Ore)
+
+| Property | Value |
+|----------|-------|
+| **Total Range** | Y: -64 to 16 |
+| **Peak Y** | -64 (highest at bottom, reduced by bedrock) |
+| **Peak Value** | ~225 (Deepslate Diamond at Y=-59) |
+| **Distribution** | Triangular -64 to 16, buried (50% small, 100% medium, 70% large) |
+| **Green Zone** | Y: -64 to -48 |
+| **Notes** | Best Y=-59 (above bedrock). Mine at -53 to avoid lava pools. Diamond Ore (stone) only at Y: 0-16 (tiny ~13 peak at Y=8) |
+
+**Approximate Combined Distribution Curve:**
+- Y -64 to -59: ~200-225 (bedrock interference)
+- Y -59: ~225 (effective peak, best level)
+- Y -59 to -48: ~225-160
+- Y -48 to -32: ~160-120
+- Y -32 to -16: ~120-100
+- Y -16 to 0: ~100-40
+- Y 0-8: ~15-13 (diamond ore only)
+- Y 8-16: ~13-0
+
+#### Redstone (Combined: Redstone Ore + Deepslate Redstone Ore)
+
+| Property | Value |
+|----------|-------|
+| **Total Range** | Y: -64 to 15 |
+| **Peak Y** | -59 (Deepslate) and 8 (Redstone Ore) |
+| **Peak Value** | ~510 (Deepslate at Y=-59) + ~90 (Redstone Ore at Y=8) |
+| **Distribution** | Two: Lower triangular (-96 to -32, peak -59) + Upper uniform (-64 to 15) |
+| **Green Zone** | Y: -64 to -32 |
+| **Notes** | Mine at -53 to avoid lava pools. Mine above 8 to avoid deepslate. Redstone Ore (non-deepslate) Y: 0-15 with peak ~90 |
+
+**Approximate Combined Distribution Curve:**
+- Y -64 to -59: ~450-510 (deepslate peak zone)
+- Y -59: ~510 (peak)
+- Y -59 to -48: ~510-400
+- Y -48 to -32: ~400-200
+- Y -32 to -16: ~100-90 (uniform portion)
+- Y -16 to 0: ~90-100
+- Y 0-8: ~90-100 (redstone ore)
+- Y 8-15: ~90-0
+
+#### Lapis Lazuli (Combined: Lapis Lazuli Ore + Deepslate Lapis Lazuli Ore)
+
+| Property | Value |
+|----------|-------|
+| **Total Range** | Y: -64 to 64 |
+| **Peak Y** | 0 |
+| **Peak Value** | ~130 (Deepslate at Y=0) + ~115 (Lapis Ore at Y=0) = ~245 combined |
+| **Distribution** | Two: Triangular -32 to 32 (exposed) + Uniform -64 to 64 (100% buried/hidden) |
+| **Green Zone** | Y: -16 to 16 |
+| **Notes** | Best at Y=0. Mining below 64 yields good amounts. Hidden/buried lapis uniform throughout. Deepslate Lapis: -64 to 8, peak ~130 at Y=0. Regular Lapis: 0-64 with triangular peak ~115 at Y=0 |
+
+**Approximate Combined Distribution Curve:**
+- Y -64 to -56: ~55-57 (deepslate uniform buried)
+- Y -56 to -32: ~57-70
+- Y -32 to -16: ~70-100
+- Y -16 to 0: ~100-245 (peak zone)
+- Y 0: ~245 (peak, both variants)
+- Y 0-16: ~245-150
+- Y 16-32: ~100-60
+- Y 32-48: ~50-30
+- Y 48-64: ~30-0
+
+#### Emerald (Combined: Emerald Ore + Deepslate Emerald Ore)
+
+| Property | Value |
+|----------|-------|
+| **Total Range** | Y: -16 to 320 |
+| **Peak Y** | ~100 (based on curve) |
+| **Peak Value** | ~0.61 per 100k blocks (very rare!) |
+| **Distribution** | Triangular -16 to 320, peak around Y=100 |
+| **Green Zone** | Y: 64-136 |
+| **Notes** | **MOUNTAIN BIOMES ONLY!** More generates higher but less terrain. Very rare ore. Deepslate Emerald only Y: -16 to 16 (peak ~0.095 at Y=0) |
+
+**Approximate Combined Distribution Curve:**
+- Y -16 to 0: ~0.05-0.095 (deepslate, mountain biomes)
+- Y 0-32: ~0.15-0.35
+- Y 32-64: ~0.35-0.50
+- Y 64-100: ~0.50-0.61 (peak zone)
+- Y 100: ~0.61 (peak)
+- Y 100-136: ~0.61-0.45
+- Y 136-180: ~0.45-0.25
+- Y 180-240: ~0.25-0.05
+- Y 240-320: ~0.05-0
 
 ### Nether Ores
 
-| Ore | Min Y | Max Y | Peak Y | Green Zones | Notes |
-|-----|-------|-------|--------|-------------|-------|
-| Nether Gold | | | | | |
-| Nether Quartz | | | | | |
-| Ancient Debris | | | | | |
+#### Nether Quartz Ore
+
+| Property | Value |
+|----------|-------|
+| **Total Range** | Y: 10 to 117 |
+| **Peak Y** | ~14 (first peak) and ~114 (second peak near ceiling) |
+| **Peak Value** | ~710 at Y=114, ~650 at Y=14 |
+| **Distribution** | Complex - high at ceiling and floor, lower in middle (~300 at Y=35-100) |
+| **Green Zone** | Y: 10-22 and Y: 105-117 |
+| **Notes** | Very common ore. Two peaks near floor and ceiling of Nether. Middle section still substantial (~300-340) |
+
+**Approximate Distribution Curve:**
+- Y 10: ~0 (starting)
+- Y 12-14: ~500-650 (floor peak)
+- Y 14-22: ~650-550
+- Y 22-35: ~550-300 (dip)
+- Y 35-100: ~300-340 (plateau)
+- Y 100-105: ~340-400
+- Y 105-114: ~400-710 (ceiling peak)
+- Y 114-117: ~710-0
+
+#### Nether Gold Ore
+
+| Property | Value |
+|----------|-------|
+| **Total Range** | Y: 10 to 117 |
+| **Peak Y** | ~14 (first peak) and ~114 (second peak near ceiling) |
+| **Peak Value** | ~250 at Y=114, ~225 at Y=14 |
+| **Distribution** | Similar shape to Nether Quartz - peaks at floor and ceiling |
+| **Green Zone** | Y: 10-22 and Y: 105-117 |
+| **Notes** | Found in Nether Wastes. Same distribution pattern as Nether Quartz but lower quantities |
+
+**Approximate Distribution Curve:**
+- Y 10: ~0
+- Y 12-14: ~180-225 (floor peak)
+- Y 14-22: ~225-180
+- Y 22-35: ~180-90 (dip)
+- Y 35-100: ~100-120 (plateau)
+- Y 100-105: ~120-150
+- Y 105-114: ~150-250 (ceiling peak)
+- Y 114-117: ~250-0
+
+#### Ancient Debris
+
+| Property | Value |
+|----------|-------|
+| **Total Range** | Y: 8 to 119 |
+| **Peak Y** | 15 |
+| **Peak Value** | ~50 per 100k blocks |
+| **Distribution** | Sharp triangular peak at Y=15, tiny amounts elsewhere |
+| **Green Zone** | Y: 8-22 |
+| **Notes** | Very rare. Best level Y=15. Small secondary presence at ceiling (~3 at Y=115-119). Never exposed to air |
+
+**Approximate Distribution Curve:**
+- Y 8-12: ~0-20
+- Y 12-15: ~20-50 (peak)
+- Y 15: ~50 (peak)
+- Y 15-22: ~50-10
+- Y 22-100: ~1-2 (trace amounts)
+- Y 100-119: ~2-3 (tiny ceiling presence)
+
+### End Dimension
+
+No mineable ores in The End.
+
+---
+
+## Implementation Notes for Distribution Data
+
+### Data Structure Recommendation
+
+Rather than storing full curves, use a simplified approach:
+
+```java
+public enum ProbabilityTier {
+    GREEN,   // >70% of peak OR in green zone
+    YELLOW,  // 30-70% of peak
+    RED,     // <30% of peak but >0
+    NONE     // 0% - outside spawn range
+}
+
+public class OreData {
+    String id;              // "coal", "diamond", etc.
+    String displayName;     // "Coal", "Diamond"
+    int minY;               // Minimum spawn Y
+    int maxY;               // Maximum spawn Y
+    int[] greenZoneMin;     // Green zone lower bounds (can have multiple)
+    int[] greenZoneMax;     // Green zone upper bounds
+    int peakY;              // Y with highest spawn rate
+    float peakValue;        // For relative calculations
+
+    // Key Y-level thresholds for tier calculation
+    int yellowThresholdLow;  // Below this Y, transitions from green->yellow
+    int yellowThresholdHigh; // Above this Y, transitions from green->yellow
+    int redThresholdLow;     // Below this Y, transitions from yellow->red
+    int redThresholdHigh;    // Above this Y, transitions from yellow->red
+}
+```
+
+### Simplified Tier Boundaries (Recommended Implementation)
+
+Rather than calculating percentages, use pre-computed Y boundaries:
+
+| Ore | Green Zone | Yellow Zone | Red Zone |
+|-----|-----------|-------------|----------|
+| **Coal** | 67-125, 136+ | 40-67, 125-136 | 0-40 |
+| **Copper** | 32-64 | 0-32, 64-96 | -16-0, 96-112 |
+| **Iron** | Lower: -8 to 32, Upper: 200-256 | Always yellow if Y < 72 and not green | -64 to -48, 72-200 (when not in green/yellow) |
+| **Gold** | -30 to -5, -54 to -48 | -48 to -30, -5 to 8 | 8-32 |
+| **Gold (Badlands)** | 32+ (any Y above 32) | N/A | N/A |
+| **Diamond** | -64 to -48 | -48 to -16 | -16 to 16 |
+| **Redstone** | -64 to -32 | -32 to 16 (jumps straight to yellow at Y=16+) | N/A |
+| **Lapis** | -16 to 16 | -64 to -16, 16-64 (jumps straight to yellow outside green) | N/A |
+| **Emerald** | 64-136 (mountain biomes only) | 32-64, 136-200 | -16 to 32, 200-320 |
+| **Nether Quartz** | 10-22, 105-117 | 22-35, 95-105 | 35-95 |
+| **Nether Gold** | 10-22, 105-117 | 22-35, 95-105 | 35-95 |
+| **Ancient Debris** | 8-22 | N/A | 22-119 |
+
+### Special Biome Handling
+
+#### Mountain Biomes (Emerald Spawning)
+
+Emerald ore ONLY spawns in these biomes. Show as GRAY in all other biomes:
+
+**Biome IDs:**
+- `minecraft:meadow`
+- `minecraft:cherry_grove`
+- `minecraft:grove`
+- `minecraft:snowy_slopes`
+- `minecraft:jagged_peaks`
+- `minecraft:frozen_peaks`
+- `minecraft:stony_peaks`
+- `minecraft:windswept_hills`
+- `minecraft:windswept_gravelly_hills`
+- `minecraft:windswept_forest`
+
+#### Badlands Biomes (Extra Gold Spawning)
+
+Gold spawns at elevated rates up to Y=255 in badlands biomes. Show as GREEN for any Y > 32:
+
+**Biome IDs:**
+- `minecraft:badlands`
+- `minecraft:wooded_badlands`
+- `minecraft:eroded_badlands`
+
+### Ore-Specific Implementation Notes
+
+#### Coal
+- **Y >= 136:** Always GREEN (uniform distribution, consistent spawning)
+- **Y 67-125:** GREEN (peak zone of triangular distribution)
+- **Y 40-67 or 125-136:** YELLOW
+- **Y 0-40:** RED
+
+#### Iron (Two Triangular Distributions)
+- **Upper Triangle (136-320):** GREEN at 200-256 (mountain peaks)
+- **Lower Triangle (-24 to 56):** GREEN at -8 to 32 (main ore concentration)
+- **Y < 72:** Always at least YELLOW (never red) due to uniform small blob distribution
+- **Y 72-200:** RED (sparse area between distributions)
+
+#### Gold (Two Peaks)
+- **Upper Peak (-16):** GREEN zone is -30 to -5
+- **Lower Peak (~-50):** GREEN zone is -54 to -48 (small)
+- **Y -48 to -30:** YELLOW (between peaks)
+- **Y -5 to 8:** YELLOW (above upper peak)
+- **Y 8-32:** RED
+- **Badlands special:** GREEN for any Y > 32
+
+#### Redstone
+- **Y -64 to -32:** GREEN
+- **Y -32 to 16:** YELLOW (jumps straight to yellow, no red zone)
+- **Y > 16:** GRAY (no spawning)
+
+#### Lapis Lazuli
+- **Y -16 to 16:** GREEN
+- **Y -64 to -16 or 16-64:** YELLOW (jumps straight to yellow, no red zone)
+- **Y outside -64 to 64:** GRAY (no spawning)
+
+---
+
+## Peak Y-Level Indicator (★)
+
+When the player is at or within ±1 of an ore's peak Y-level, display a star (★) next to the ore entry in the HUD. This indicates "you are at THE ideal level for this ore."
+
+### Peak Indicator Implementation
+
+- Display: Append `★` symbol next to ore name/icon when at peak
+- Only shows when ore is GREEN tier (peak is always within green zone)
+- Works in both icon and text display modes
+
+### Peak Y-Levels (±1 range)
+
+| Ore | Peak Y | Indicator Range |
+|-----|--------|-----------------|
+| **Coal** | 96 | 95-97 |
+| **Copper** | 48 | 47-49 |
+| **Iron (Lower)** | 16 | 15-17 |
+| **Iron (Upper)** | 256 | NO INDICATOR (upper peak excluded) |
+| **Gold** | -16 | -17 to -15 |
+| **Diamond** | -59 | -60 to -58 |
+| **Redstone** | -59 | -60 to -58 |
+| **Lapis** | 0 | -1 to 1 |
+| **Emerald** | 100 | 99-101 |
+| **Nether Quartz (Floor)** | 14 | 13-15 |
+| **Nether Quartz (Ceiling)** | 114 | 113-115 |
+| **Nether Gold (Floor)** | 14 | 13-15 |
+| **Nether Gold (Ceiling)** | 114 | 113-115 |
+| **Ancient Debris** | 15 | 14-16 |
+
+### Notes
+- Iron upper peak (Y=256) does NOT get the star indicator - only the lower/main peak at Y=16
+- Nether ores have two peaks each (floor and ceiling) - both get indicators
+- Coal's upper uniform zone (136+) is consistently good but has no single "peak" - only the triangular peak at 96 gets the star
 
 ---
 
@@ -244,3 +621,9 @@ Follow Teeknox STYLE_GUIDE.md:
 - Reference STYLE_GUIDE.md for visual styling
 - Test in all three dimensions
 - Verify Y-coordinate accuracy with F3 debug screen
+- Emerald: Show as GRAY unless player is in a mountain biome (requires biome detection)
+- Gold: Check for badlands biome and apply special GREEN rule for Y > 32
+- Iron: Has two separate peak zones; ensure Y < 72 is always at least YELLOW; only lower peak gets ★
+- Redstone/Lapis: No red zone - jump from green directly to yellow
+- Ancient Debris "green zone" is small but well-defined at Y=15
+- Peak indicator (★) shows when player is within ±1 of optimal Y-level

@@ -1,0 +1,29 @@
+{
+  "category.oreoracle": "Ore Oracle",
+
+  "key.oreoracle.open_selector": "Open Ore Selector",
+  "key.oreoracle.toggle_hud": "Toggle HUD",
+
+  "oreoracle.screen.selector.title": "Ore Selector",
+  "oreoracle.screen.selector.subtitle": "Select ores to track or filter by probability",
+
+  "oreoracle.screen.config.title": "Ore Oracle Settings",
+  "oreoracle.screen.config.subtitle": "Configure HUD display options",
+
+  "oreoracle.filter.green": "Green",
+  "oreoracle.filter.yellow": "Yellow",
+  "oreoracle.filter.all": "All",
+
+  "oreoracle.config.enabled": "HUD Enabled",
+  "oreoracle.config.showHeader": "Show Y-Level Header",
+  "oreoracle.config.position": "HUD Position",
+  "oreoracle.config.position.left": "Left",
+  "oreoracle.config.position.right": "Right",
+  "oreoracle.config.displayMode": "Display Mode",
+  "oreoracle.config.displayMode.icon": "Icons",
+  "oreoracle.config.displayMode.name": "Names",
+  "oreoracle.config.maxOres": "Max Visible Ores: %d",
+
+  "oreoracle.command.hud.enabled": "Ore Oracle HUD enabled",
+  "oreoracle.command.hud.disabled": "Ore Oracle HUD disabled"
+}

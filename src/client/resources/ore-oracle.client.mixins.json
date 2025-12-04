@@ -1,9 +1,8 @@
 {
   "required": true,
-  "package": "com.teeknox.modtemplate.mixin",
+  "package": "com.teeknox.oreoracle.mixin",
   "compatibilityLevel": "JAVA_21",
   "client": [
-    "ExampleMixin"
   ],
   "injectors": {
     "defaultRequire": 1
