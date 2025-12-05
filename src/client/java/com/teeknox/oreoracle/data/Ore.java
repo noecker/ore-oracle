@@ -10,7 +10,7 @@ public enum Ore {
     // Overworld ores (using raw material icons for better visibility at small sizes)
     COAL("coal", "Coal", Dimension.OVERWORLD, 0, 320, new int[]{96}, true, Items.COAL),
     COPPER("copper", "Copper", Dimension.OVERWORLD, -16, 112, new int[]{48}, true, Items.RAW_COPPER),
-    IRON("iron", "Iron", Dimension.OVERWORLD, -64, 384, new int[]{16}, true, Items.RAW_IRON), // Only lower peak gets indicator
+    IRON("iron", "Iron", Dimension.OVERWORLD, -64, 384, new int[]{16, 232}, true, Items.RAW_IRON), // Both peaks get indicator
     GOLD("gold", "Gold", Dimension.OVERWORLD, -64, 32, new int[]{-16}, true, Items.RAW_GOLD),
     DIAMOND("diamond", "Diamond", Dimension.OVERWORLD, -64, 16, new int[]{-59}, true, Items.DIAMOND),
     REDSTONE("redstone", "Redstone", Dimension.OVERWORLD, -64, 15, new int[]{-59}, true, Items.REDSTONE),

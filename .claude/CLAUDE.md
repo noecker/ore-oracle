@@ -513,7 +513,7 @@ Rather than calculating percentages, use pre-computed Y boundaries:
 |-----|-----------|-------------|----------|
 | **Coal** | 67-125, 136+ | 40-67, 125-136 | 0-40 |
 | **Copper** | 32-64 | 0-32, 64-96 | -16-0, 96-112 |
-| **Iron** | Lower: -8 to 32, Upper: 200-256 | Always yellow if Y < 72 and not green | -64 to -48, 72-200 (when not in green/yellow) |
+| **Iron** | Lower: -8 to 32, Upper: 200-264 | Lower: Y < 72 (not green), Upper: 140-200, 264-320 | Lower: 72-80, Upper: 80-140, 320-384 |
 | **Gold** | -30 to -5, -54 to -48 | -48 to -30, -5 to 8 | 8-32 |
 | **Gold (Badlands)** | 32+ (any Y above 32) | N/A | N/A |
 | **Diamond** | -64 to -48 | -48 to -16 | -16 to 16 |
@@ -571,10 +571,14 @@ Many ore distribution charts online show "ores per 100,000 blocks sampled at eac
 - **Y 0-40:** RED
 
 #### Iron (Two Triangular Distributions)
-- **Upper Triangle (136-320):** GREEN at 200-256 (mountain peaks)
-- **Lower Triangle (-24 to 56):** GREEN at -8 to 32 (main ore concentration)
-- **Y < 72:** Always at least YELLOW (never red) due to uniform small blob distribution
-- **Y 72-200:** RED (sparse area between distributions)
+- **Upper Triangle (80-384, peak at 232):**
+  - GREEN at Y 200-264 (near peak)
+  - YELLOW at Y 140-200 or 264-320 (transition zones)
+  - RED at Y 80-140 or 320-384 (sparse edges)
+- **Lower Triangle (-24 to 56, peak at 16):**
+  - GREEN at Y -8 to 32 (main ore concentration)
+  - YELLOW for Y < 72 and not in green zone (uniform small blob distribution)
+  - RED at Y 72-80 (gap between distributions)
 
 #### Gold (Two Peaks)
 - **Upper Peak (-16):** GREEN zone is -30 to -5
@@ -630,7 +634,7 @@ When the player is at or within ±1 of an ore's peak Y-level, display a star (�
 | **Coal** | 96 | 95-97 |
 | **Copper** | 48 | 47-49 |
 | **Iron (Lower)** | 16 | 15-17 |
-| **Iron (Upper)** | 256 | NO INDICATOR (upper peak excluded) |
+| **Iron (Upper)** | 232 | 231-233 |
 | **Gold** | -16 | -17 to -15 |
 | **Diamond** | -59 | -60 to -58 |
 | **Redstone** | -59 | -60 to -58 |
@@ -641,7 +645,7 @@ When the player is at or within ±1 of an ore's peak Y-level, display a star (�
 | **Ancient Debris** | 15 | 14-16 |
 
 ### Notes
-- Iron upper peak (Y=256) does NOT get the star indicator - only the lower/main peak at Y=16
+- Iron has two peaks: Y=16 (lower triangle) and Y=232 (upper triangle) - both get the star indicator
 - Nether Quartz and Nether Gold have uniform distributions - no peak, so no indicator. Entire range (10-117) is equally good.
 - Coal's upper uniform zone (136+) is consistently good but has no single "peak" - only the triangular peak at 96 gets the star
 - Emerald peak at Y=232 reflects the algorithm's triangle distribution, not world-sample data
@@ -656,7 +660,7 @@ When the player is at or within ±1 of an ore's peak Y-level, display a star (�
 - Verify Y-coordinate accuracy with F3 debug screen
 - Emerald: Show as GRAY unless player is in a mountain biome (requires biome detection)
 - Gold: Check for badlands biome and apply special GREEN rule for Y > 32
-- Iron: Has two separate peak zones; ensure Y < 72 is always at least YELLOW; only lower peak gets ★
+- Iron: Has two separate peak zones (Y=16 and Y=232); ensure Y < 72 is always at least YELLOW; both peaks get ★
 - Redstone/Lapis: No red zone - jump from green directly to yellow
 - Ancient Debris "green zone" is small but well-defined at Y=15
 - Peak indicator (★) shows when player is within ±1 of optimal Y-level
