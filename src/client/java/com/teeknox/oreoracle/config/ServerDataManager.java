@@ -138,12 +138,13 @@ public class ServerDataManager {
     public boolean shouldDisplayOre(Ore ore, ProbabilityTier tier) {
         ensureLoaded();
 
-        // Always show specifically tracked ores
-        if (isOreTracked(ore)) {
-            return true;
+        // NONE filter = "Specific" mode - ONLY show tracked ores
+        if (currentData.probabilityFilter == ProbabilityTier.NONE) {
+            return isOreTracked(ore);
         }
 
-        // Don't show if no probability and not tracked
+        // For other filters, tracked ores are ignored (filter takes precedence)
+        // Don't show if no probability at this Y-level
         if (tier == ProbabilityTier.NONE) {
             return false;
         }
@@ -153,7 +154,7 @@ public class ServerDataManager {
             case GREEN -> tier == ProbabilityTier.GREEN;
             case YELLOW -> tier == ProbabilityTier.GREEN || tier == ProbabilityTier.YELLOW;
             case RED -> tier != ProbabilityTier.NONE;
-            case NONE -> false;
+            case NONE -> false; // Already handled above, but needed for completeness
         };
     }
 

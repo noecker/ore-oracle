@@ -11,8 +11,9 @@
   "oreoracle.screen.config.subtitle": "Configure HUD display options",
 
   "oreoracle.filter.green": "Green",
-  "oreoracle.filter.yellow": "Yellow",
+  "oreoracle.filter.yellow": "Yellow+",
   "oreoracle.filter.all": "All",
+  "oreoracle.filter.specific": "Specific",
 
   "oreoracle.config.enabled": "HUD Enabled",
   "oreoracle.config.showHeader": "Show Y-Level Header",
