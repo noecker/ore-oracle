@@ -381,22 +381,22 @@ Follow Teeknox STYLE_GUIDE.md:
 | Property | Value |
 |----------|-------|
 | **Total Range** | Y: -16 to 320 |
-| **Peak Y** | ~100 (based on curve) |
-| **Peak Value** | ~0.61 per 100k blocks (very rare!) |
-| **Distribution** | Triangular -16 to 320, peak around Y=100 |
-| **Green Zone** | Y: 64-136 |
-| **Notes** | **MOUNTAIN BIOMES ONLY!** More generates higher but less terrain. Very rare ore. Deepslate Emerald only Y: -16 to 16 (peak ~0.095 at Y=0) |
+| **Peak Y** | 232 (algorithm-based triangle peak) |
+| **Distribution** | Triangular -16 to 320, peak at Y=232 |
+| **Green Zone** | Y: 180-320 |
+| **Notes** | **MOUNTAIN BIOMES ONLY!** Triangle distribution peaks at Y=232. Higher altitudes have higher spawn density per stone block. Deepslate Emerald only Y: -16 to 16. |
 
-**Approximate Combined Distribution Curve:**
-- Y -16 to 0: ~0.05-0.095 (deepslate, mountain biomes)
-- Y 0-32: ~0.15-0.35
-- Y 32-64: ~0.35-0.50
-- Y 64-100: ~0.50-0.61 (peak zone)
-- Y 100: ~0.61 (peak)
-- Y 100-136: ~0.61-0.45
-- Y 136-180: ~0.45-0.25
-- Y 180-240: ~0.25-0.05
-- Y 240-320: ~0.05-0
+**Algorithm-Based Distribution (spawn chance per stone block):**
+
+The Minecraft ore generation algorithm uses a triangle distribution from Y=-16 to Y=320, with the peak at Y=232 (the midpoint formula: (-16+320+160)/2 ≈ 232, confirmed by Minecraft Wiki).
+
+**Important:** Previous "per 100k blocks" charts showed emerald peaking around Y=100. This was misleading because those charts sampled actual world generation, which includes air blocks. At high altitudes, mountains have mostly air and little stone, so the total emerald count is low even though the per-stone-block density is highest.
+
+**For players:** When mining stone in mountain biomes, you will encounter MORE emeralds per block broken at Y=230 than at Y=100. The green zone reflects this algorithm-based reality.
+
+- Y -16 to 100: RED (far from peak, low density per stone block)
+- Y 100-180: YELLOW (transitional zone)
+- Y 180-320: GREEN (near peak at 232, highest density per stone block)
 
 ### Nether Ores
 
@@ -405,42 +405,34 @@ Follow Teeknox STYLE_GUIDE.md:
 | Property | Value |
 |----------|-------|
 | **Total Range** | Y: 10 to 117 |
-| **Peak Y** | ~14 (first peak) and ~114 (second peak near ceiling) |
-| **Peak Value** | ~710 at Y=114, ~650 at Y=14 |
-| **Distribution** | Complex - high at ceiling and floor, lower in middle (~300 at Y=35-100) |
-| **Green Zone** | Y: 10-22 and Y: 105-117 |
-| **Notes** | Very common ore. Two peaks near floor and ceiling of Nether. Middle section still substantial (~300-340) |
+| **Peak Y** | None (uniform distribution) |
+| **Distribution** | Uniform - equal spawn chance per netherrack block throughout range |
+| **Green Zone** | Y: 10-117 (entire range) |
+| **Notes** | Very common ore. 16 attempts per chunk (32 in basalt deltas). |
 
-**Approximate Distribution Curve:**
-- Y 10: ~0 (starting)
-- Y 12-14: ~500-650 (floor peak)
-- Y 14-22: ~650-550
-- Y 22-35: ~550-300 (dip)
-- Y 35-100: ~300-340 (plateau)
-- Y 100-105: ~340-400
-- Y 105-114: ~400-710 (ceiling peak)
-- Y 114-117: ~710-0
+**Algorithm-Based Distribution (spawn chance per netherrack block):**
+
+The Minecraft ore generation algorithm spawns Nether Quartz **uniformly** from Y=10 to Y=117. Every netherrack block in this range has an equal chance of being replaced with quartz ore.
+
+**Important:** Previous charts showed "peaks" at floor (~Y=14) and ceiling (~Y=114). This was misleading because those charts sampled actual Nether generation. The Nether has more netherrack near the floor and ceiling (solid terrain) and less in the middle (lava lakes, open caverns). The "peaks" reflected netherrack availability, not the spawn algorithm.
+
+**For players:** The entire Y=10-117 range is equally good for finding quartz per block mined. There is no "best" level - mine wherever is convenient.
 
 #### Nether Gold Ore
 
 | Property | Value |
 |----------|-------|
 | **Total Range** | Y: 10 to 117 |
-| **Peak Y** | ~14 (first peak) and ~114 (second peak near ceiling) |
-| **Peak Value** | ~250 at Y=114, ~225 at Y=14 |
-| **Distribution** | Similar shape to Nether Quartz - peaks at floor and ceiling |
-| **Green Zone** | Y: 10-22 and Y: 105-117 |
-| **Notes** | Found in Nether Wastes. Same distribution pattern as Nether Quartz but lower quantities |
+| **Peak Y** | None (uniform distribution) |
+| **Distribution** | Uniform - equal spawn chance per netherrack block throughout range |
+| **Green Zone** | Y: 10-117 (entire range) |
+| **Notes** | Found in all Nether biomes. 10 attempts per chunk (20 in basalt deltas). |
 
-**Approximate Distribution Curve:**
-- Y 10: ~0
-- Y 12-14: ~180-225 (floor peak)
-- Y 14-22: ~225-180
-- Y 22-35: ~180-90 (dip)
-- Y 35-100: ~100-120 (plateau)
-- Y 100-105: ~120-150
-- Y 105-114: ~150-250 (ceiling peak)
-- Y 114-117: ~250-0
+**Algorithm-Based Distribution (spawn chance per netherrack block):**
+
+Same as Nether Quartz - the algorithm spawns Nether Gold **uniformly** from Y=10 to Y=117. The apparent "peaks" in world-sample charts reflected netherrack availability, not spawn probability.
+
+**For players:** The entire Y=10-117 range is equally good for finding nether gold per block mined.
 
 #### Ancient Debris
 
@@ -513,9 +505,9 @@ Rather than calculating percentages, use pre-computed Y boundaries:
 | **Diamond** | -64 to -48 | -48 to -16 | -16 to 16 |
 | **Redstone** | -64 to -32 | -32 to 16 (jumps straight to yellow at Y=16+) | N/A |
 | **Lapis** | -16 to 16 | -64 to -16, 16-64 (jumps straight to yellow outside green) | N/A |
-| **Emerald** | 64-136 (mountain biomes only) | 32-64, 136-200 | -16 to 32, 200-320 |
-| **Nether Quartz** | 10-22, 105-117 | 22-35, 95-105 | 35-95 |
-| **Nether Gold** | 10-22, 105-117 | 22-35, 95-105 | 35-95 |
+| **Emerald** | 180-320 (mountain biomes only, peak at 232) | 100-180 | -16 to 100 |
+| **Nether Quartz** | 10-117 (entire range, uniform) | N/A | N/A |
+| **Nether Gold** | 10-117 (entire range, uniform) | N/A | N/A |
 | **Ancient Debris** | 8-22 | N/A | 22-119 |
 
 ### Special Biome Handling
@@ -544,6 +536,17 @@ Gold spawns at elevated rates up to Y=255 in badlands biomes. Show as GREEN for 
 - `minecraft:badlands`
 - `minecraft:wooded_badlands`
 - `minecraft:eroded_badlands`
+
+### Algorithm-Based Distribution Philosophy
+
+**Important:** This mod uses algorithm-based ore distribution tiers, NOT world-sample-based data.
+
+Many ore distribution charts online show "ores per 100,000 blocks sampled at each Y-level." These charts sample actual world generation, which includes air blocks. This is misleading for ores at high altitudes (like Emerald) or in areas with variable terrain (like Nether ores), because:
+
+- At high altitudes, most sampled blocks are air, making ore counts appear low
+- In the Nether, lava lakes create air pockets that dilute samples in the middle Y-range
+
+**Our approach:** We show spawn density per replaceable block (stone/netherrack). This tells players: "If you mine a block here, what's the chance it contains ore?" This is what actually matters for mining efficiency.
 
 ### Ore-Specific Implementation Notes
 
@@ -577,6 +580,23 @@ Gold spawns at elevated rates up to Y=255 in badlands biomes. Show as GREEN for 
 - **Y -64 to -16 or 16-64:** YELLOW (jumps straight to yellow, no red zone)
 - **Y outside -64 to 64:** GRAY (no spawning)
 
+#### Emerald (Algorithm-Based Triangle)
+- **Triangle distribution** from Y=-16 to Y=320, peak at Y=232
+- **Y >= 180:** GREEN (near peak, highest density per stone block)
+- **Y 100-180:** YELLOW (transitional)
+- **Y < 100:** RED (far from peak)
+- **Mountain biomes only** - shows GRAY/NONE in other biomes
+
+#### Nether Quartz (Uniform)
+- **Uniform distribution** from Y=10 to Y=117
+- **Entire range is GREEN** - no peaks, every Y-level equally good
+- No peak indicator (★) since there's no single best level
+
+#### Nether Gold (Uniform)
+- **Uniform distribution** from Y=10 to Y=117
+- **Entire range is GREEN** - same as Nether Quartz
+- No peak indicator (★) since there's no single best level
+
 ---
 
 ## Peak Y-Level Indicator (★)
@@ -601,17 +621,16 @@ When the player is at or within ±1 of an ore's peak Y-level, display a star (�
 | **Diamond** | -59 | -60 to -58 |
 | **Redstone** | -59 | -60 to -58 |
 | **Lapis** | 0 | -1 to 1 |
-| **Emerald** | 100 | 99-101 |
-| **Nether Quartz (Floor)** | 14 | 13-15 |
-| **Nether Quartz (Ceiling)** | 114 | 113-115 |
-| **Nether Gold (Floor)** | 14 | 13-15 |
-| **Nether Gold (Ceiling)** | 114 | 113-115 |
+| **Emerald** | 232 | 231-233 |
+| **Nether Quartz** | N/A | NO INDICATOR (uniform distribution) |
+| **Nether Gold** | N/A | NO INDICATOR (uniform distribution) |
 | **Ancient Debris** | 15 | 14-16 |
 
 ### Notes
 - Iron upper peak (Y=256) does NOT get the star indicator - only the lower/main peak at Y=16
-- Nether ores have two peaks each (floor and ceiling) - both get indicators
+- Nether Quartz and Nether Gold have uniform distributions - no peak, so no indicator. Entire range (10-117) is equally good.
 - Coal's upper uniform zone (136+) is consistently good but has no single "peak" - only the triangular peak at 96 gets the star
+- Emerald peak at Y=232 reflects the algorithm's triangle distribution, not world-sample data
 
 ---
 
