@@ -12,11 +12,11 @@ public enum Ore {
     DIAMOND("diamond", "Diamond", Dimension.OVERWORLD, -64, 16, new int[]{-59}, true),
     REDSTONE("redstone", "Redstone", Dimension.OVERWORLD, -64, 15, new int[]{-59}, true),
     LAPIS("lapis", "Lapis", Dimension.OVERWORLD, -64, 64, new int[]{0}, true),
-    EMERALD("emerald", "Emerald", Dimension.OVERWORLD, -16, 320, new int[]{100}, true),
+    EMERALD("emerald", "Emerald", Dimension.OVERWORLD, -16, 320, new int[]{232}, true),
 
-    // Nether ores
-    NETHER_QUARTZ("nether_quartz", "Nether Quartz", Dimension.NETHER, 10, 117, new int[]{14, 114}, true),
-    NETHER_GOLD("nether_gold", "Nether Gold", Dimension.NETHER, 10, 117, new int[]{14, 114}, true),
+    // Nether ores (uniform distribution - no peaks, entire range is equally good)
+    NETHER_QUARTZ("nether_quartz", "Nether Quartz", Dimension.NETHER, 10, 117, new int[]{}, false),
+    NETHER_GOLD("nether_gold", "Nether Gold", Dimension.NETHER, 10, 117, new int[]{}, false),
     ANCIENT_DEBRIS("ancient_debris", "Ancient Debris", Dimension.NETHER, 8, 119, new int[]{15}, true);
 
     private final String id;

@@ -221,10 +221,12 @@ public class OreDistribution {
 
     /**
      * Emerald: Y -16 to 320 (MOUNTAIN BIOMES ONLY)
+     * Triangle distribution with peak at Y=232 (algorithm-based, not world-sample-based).
+     * Higher altitudes have higher spawn density per stone block.
      * - NONE if not in mountain biome
-     * - GREEN at Y 64-136
-     * - YELLOW at Y 32-64 or 136-200
-     * - RED at Y -16 to 32 or 200-320
+     * - GREEN at Y 180-320 (near peak at 232)
+     * - YELLOW at Y 100-180 (transitional)
+     * - RED at Y -16 to 100 (far from peak)
      */
     private static ProbabilityTier getEmeraldTier(int y, @Nullable Identifier biome) {
         // Emerald ONLY spawns in mountain biomes
@@ -235,52 +237,42 @@ public class OreDistribution {
         if (y < -16 || y > 320) {
             return ProbabilityTier.NONE;
         }
-        if (y >= 64 && y <= 136) {
+        // Peak at 232, GREEN zone near peak
+        if (y >= 180) {
             return ProbabilityTier.GREEN;
         }
-        if ((y >= 32 && y < 64) || (y > 136 && y <= 200)) {
+        // Transitional yellow zone
+        if (y >= 100) {
             return ProbabilityTier.YELLOW;
         }
-        // y < 32 or y > 200
+        // Far from peak
         return ProbabilityTier.RED;
     }
 
     // ==================== Nether Ores ====================
 
     /**
-     * Nether Quartz: Y 10-117 (two peaks at floor and ceiling)
-     * - GREEN at Y 10-22 (floor peak) and Y 105-117 (ceiling peak)
-     * - YELLOW at Y 22-35 and 95-105
-     * - RED at Y 35-95
+     * Nether Quartz: Y 10-117 (UNIFORM distribution)
+     * The algorithm spawns quartz uniformly throughout the range.
+     * Previous "peaks" at floor/ceiling were artifacts of netherrack availability in world samples,
+     * not the actual spawn algorithm. Per-netherrack-block density is constant.
+     * - GREEN throughout entire range (uniform = equally good everywhere)
      */
     private static ProbabilityTier getNetherQuartzTier(int y) {
         if (y < 10 || y > 117) {
             return ProbabilityTier.NONE;
         }
-        // Floor peak green zone
-        if (y <= 22) {
-            return ProbabilityTier.GREEN;
-        }
-        // Ceiling peak green zone
-        if (y >= 105) {
-            return ProbabilityTier.GREEN;
-        }
-        // Yellow zones near peaks
-        if (y <= 35 || y >= 95) {
-            return ProbabilityTier.YELLOW;
-        }
-        // Middle section is red
-        return ProbabilityTier.RED;
+        // Uniform distribution - entire range is equally good
+        return ProbabilityTier.GREEN;
     }
 
     /**
-     * Nether Gold: Y 10-117 (same distribution pattern as Nether Quartz)
-     * - GREEN at Y 10-22 (floor peak) and Y 105-117 (ceiling peak)
-     * - YELLOW at Y 22-35 and 95-105
-     * - RED at Y 35-95
+     * Nether Gold: Y 10-117 (UNIFORM distribution)
+     * Same as Nether Quartz - uniform spawn rate per netherrack block.
+     * - GREEN throughout entire range
      */
     private static ProbabilityTier getNetherGoldTier(int y) {
-        // Same distribution as Nether Quartz
+        // Same uniform distribution as Nether Quartz
         return getNetherQuartzTier(y);
     }
 
