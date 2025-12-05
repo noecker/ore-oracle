@@ -46,10 +46,6 @@ public class OreDistribution {
         }
 
         for (int peakY : ore.getPeakYLevels()) {
-            // Iron upper peak (256) is excluded from indicator
-            if (ore == Ore.IRON && peakY == 256) {
-                continue;
-            }
             if (y >= peakY - 1 && y <= peakY + 1) {
                 return true;
             }
@@ -105,18 +101,31 @@ public class OreDistribution {
 
     /**
      * Iron: Y -64 to 384 (two triangular distributions)
-     * - GREEN at Upper Triangle: Y 200-256 (mountain peaks)
-     * - GREEN at Lower Triangle: Y -8 to 32 (main ore concentration)
+     * Upper Triangle (80-384, peak at 232):
+     * - GREEN at Y 200-264 (near peak)
+     * - YELLOW at Y 140-200 or 264-320 (transition zones)
+     * - RED at Y 80-140 or 320-384 (sparse edges)
+     * Lower Triangle (-24 to 56, peak at 16):
+     * - GREEN at Y -8 to 32 (main ore concentration)
      * - YELLOW for Y < 72 and not in green zone (uniform small blob distribution)
-     * - RED at Y 72-200 (sparse area between distributions)
+     * - RED at Y 72-80 (gap between distributions)
      */
     private static ProbabilityTier getIronTier(int y) {
         if (y < -64 || y > 384) {
             return ProbabilityTier.NONE;
         }
-        // Upper triangle green zone (mountain peaks)
-        if (y >= 200 && y <= 256) {
-            return ProbabilityTier.GREEN;
+        // Upper triangle (80-384, peak at 232)
+        if (y >= 80) {
+            // Green zone near peak
+            if (y >= 200 && y <= 264) {
+                return ProbabilityTier.GREEN;
+            }
+            // Yellow transition zones
+            if ((y >= 140 && y < 200) || (y > 264 && y <= 320)) {
+                return ProbabilityTier.YELLOW;
+            }
+            // Red for sparse edges (80-140 and 320-384)
+            return ProbabilityTier.RED;
         }
         // Lower triangle green zone (main concentration)
         if (y >= -8 && y <= 32) {
@@ -126,7 +135,7 @@ public class OreDistribution {
         if (y < 72) {
             return ProbabilityTier.YELLOW;
         }
-        // Y 72-200 is the sparse red zone, Y > 256 is also sparse
+        // Y 72-80 is the sparse red zone between distributions
         return ProbabilityTier.RED;
     }
 
