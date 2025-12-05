@@ -64,9 +64,23 @@
 
 ### Ore Distribution Data
 
-**Data Source:** Images, charts, and wiki pages provided by user - to be hardcoded
+**Data Source:** Official Minecraft Wiki (algorithm-based, not world-sample-based)
 **Minecraft Version:** 1.18+ ore distribution (modern world generation)
 **Scope:** Vanilla ores only (no modded ore support initially)
+
+**Authoritative Sources:**
+- [Minecraft Wiki - Ore (feature)](https://minecraft.wiki/w/Ore_(feature)) - Generation parameters
+- [Minecraft Wiki - Emerald Ore](https://minecraft.wiki/w/Emerald_Ore)
+- [Minecraft Wiki - Coal Ore](https://minecraft.wiki/w/Coal_Ore)
+- [Minecraft Wiki - Iron Ore](https://minecraft.wiki/w/Iron_Ore)
+- [Minecraft Wiki - Copper Ore](https://minecraft.wiki/w/Copper_Ore)
+- [Minecraft Wiki - Gold Ore](https://minecraft.wiki/w/Gold_Ore)
+- [Minecraft Wiki - Diamond Ore](https://minecraft.wiki/w/Diamond_Ore)
+- [Minecraft Wiki - Redstone Ore](https://minecraft.wiki/w/Redstone_Ore)
+- [Minecraft Wiki - Lapis Lazuli Ore](https://minecraft.wiki/w/Lapis_Lazuli_Ore)
+- [Minecraft Wiki - Nether Quartz Ore](https://minecraft.wiki/w/Nether_Quartz_Ore)
+- [Minecraft Wiki - Nether Gold Ore](https://minecraft.wiki/w/Nether_Gold_Ore)
+- [Minecraft Wiki - Ancient Debris](https://minecraft.wiki/w/Ancient_Debris)
 
 **Vanilla Ores to Support:**
 
