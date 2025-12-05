@@ -56,7 +56,8 @@ public class OreSelectorScreen extends Screen {
     // Filter buttons
     private ButtonWidget greenFilterBtn;
     private ButtonWidget yellowFilterBtn;
-    private ButtonWidget redFilterBtn;
+    private ButtonWidget allFilterBtn;
+    private ButtonWidget specificFilterBtn;
 
     public OreSelectorScreen(Screen parent) {
         super(Text.translatable("oreoracle.screen.selector.title"));
@@ -73,9 +74,9 @@ public class OreSelectorScreen extends Screen {
 
         // Filter buttons (at top of content area)
         int filterY = HEADER_HEIGHT + 5;
-        int filterBtnWidth = 60;
-        int filterSpacing = 10;
-        int totalFilterWidth = filterBtnWidth * 3 + filterSpacing * 2;
+        int filterBtnWidth = 55;
+        int filterSpacing = 6;
+        int totalFilterWidth = filterBtnWidth * 4 + filterSpacing * 3;
         int filterStartX = (this.width - totalFilterWidth) / 2;
 
         ProbabilityTier currentFilter = ServerDataManager.getInstance().getProbabilityFilter();
@@ -86,13 +87,17 @@ public class OreSelectorScreen extends Screen {
         yellowFilterBtn = ButtonWidget.builder(Text.translatable("oreoracle.filter.yellow"), btn -> setFilter(ProbabilityTier.YELLOW))
                 .dimensions(filterStartX + filterBtnWidth + filterSpacing, filterY, filterBtnWidth, FILTER_BUTTON_HEIGHT)
                 .build();
-        redFilterBtn = ButtonWidget.builder(Text.translatable("oreoracle.filter.all"), btn -> setFilter(ProbabilityTier.RED))
+        allFilterBtn = ButtonWidget.builder(Text.translatable("oreoracle.filter.all"), btn -> setFilter(ProbabilityTier.RED))
                 .dimensions(filterStartX + (filterBtnWidth + filterSpacing) * 2, filterY, filterBtnWidth, FILTER_BUTTON_HEIGHT)
+                .build();
+        specificFilterBtn = ButtonWidget.builder(Text.translatable("oreoracle.filter.specific"), btn -> setFilter(ProbabilityTier.NONE))
+                .dimensions(filterStartX + (filterBtnWidth + filterSpacing) * 3, filterY, filterBtnWidth, FILTER_BUTTON_HEIGHT)
                 .build();
 
         addDrawableChild(greenFilterBtn);
         addDrawableChild(yellowFilterBtn);
-        addDrawableChild(redFilterBtn);
+        addDrawableChild(allFilterBtn);
+        addDrawableChild(specificFilterBtn);
 
         updateFilterButtonStyles();
 
@@ -147,7 +152,15 @@ public class OreSelectorScreen extends Screen {
         // Visual feedback - button will appear pressed/active based on current selection
         greenFilterBtn.active = current != ProbabilityTier.GREEN;
         yellowFilterBtn.active = current != ProbabilityTier.YELLOW;
-        redFilterBtn.active = current != ProbabilityTier.RED;
+        allFilterBtn.active = current != ProbabilityTier.RED;
+        specificFilterBtn.active = current != ProbabilityTier.NONE;
+    }
+
+    /**
+     * Check if we're in specific mode (only show tracked ores).
+     */
+    private boolean isSpecificMode() {
+        return ServerDataManager.getInstance().getProbabilityFilter() == ProbabilityTier.NONE;
     }
 
     @Override
