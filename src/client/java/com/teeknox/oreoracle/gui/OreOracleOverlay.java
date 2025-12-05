@@ -6,6 +6,7 @@ import com.teeknox.oreoracle.data.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
@@ -21,8 +22,10 @@ public class OreOracleOverlay {
     private static final int TEXT_PRIMARY = 0xFFFFFFFF;
     private static final int TEXT_MUTED = 0xFF666666;
     private static final int PADDING = 4;
-    private static final int LINE_HEIGHT = 10;
-    private static final int STANDARD_WIDTH = 120; // Smaller width for compact ore list
+    private static final int LINE_HEIGHT_TEXT = 10;
+    private static final int LINE_HEIGHT_ICON = 18; // Taller for 16x16 item icons
+    private static final int ICON_SIZE = 16;
+    private static final int STANDARD_WIDTH = 90; // Narrower width (was 120)
 
     // Peak indicator
     private static final String PEAK_INDICATOR = " \u2605"; // Star character
@@ -96,11 +99,14 @@ public class OreOracleOverlay {
         // Draw content
         int contentY = y + PADDING;
 
+        // Determine line height based on display mode
+        int lineHeight = config.getDisplayMode() == ModConfig.DisplayMode.ICON ? LINE_HEIGHT_ICON : LINE_HEIGHT_TEXT;
+
         // Optional header
         if (config.isShowHudHeader()) {
             String header = "Y: " + lastY;
             context.drawCenteredTextWithShadow(textRenderer, header, x + overlayWidth / 2, contentY, TEXT_PRIMARY);
-            contentY += LINE_HEIGHT + PADDING;
+            contentY += LINE_HEIGHT_TEXT + PADDING;
         }
 
         // Draw ore entries
@@ -109,8 +115,8 @@ public class OreOracleOverlay {
 
         for (int i = 0; i < entriesToShow; i++) {
             OreEntry entry = cachedEntries.get(i);
-            renderOreEntry(context, textRenderer, entry, x + PADDING, contentY, overlayWidth - PADDING * 2);
-            contentY += LINE_HEIGHT;
+            renderOreEntry(context, textRenderer, entry, x + PADDING, contentY, overlayWidth - PADDING * 2, config);
+            contentY += lineHeight;
         }
 
         // Overflow indicator
@@ -122,31 +128,39 @@ public class OreOracleOverlay {
     }
 
     private void renderOreEntry(DrawContext context, TextRenderer textRenderer, OreEntry entry,
-                                 int x, int y, int availableWidth) {
-        ModConfig config = ModConfig.getInstance();
-
-        // Build display text
-        String displayText;
+                                 int x, int y, int availableWidth, ModConfig config) {
         if (config.getDisplayMode() == ModConfig.DisplayMode.ICON) {
-            // For icon mode, we'd use item icons - for now use abbreviated names
-            displayText = entry.ore.getId().substring(0, Math.min(3, entry.ore.getId().length())).toUpperCase();
+            // Icon mode: colored dot + item icon + peak star
+            int indicatorSize = 6;
+            int indicatorY = y + (LINE_HEIGHT_ICON - indicatorSize) / 2;
+            context.fill(x, indicatorY, x + indicatorSize, indicatorY + indicatorSize, entry.tier.getColor());
+
+            // Draw item icon
+            int iconX = x + indicatorSize + 2;
+            int iconY = y + (LINE_HEIGHT_ICON - ICON_SIZE) / 2;
+            ItemStack stack = new ItemStack(entry.ore.getIconItem());
+            context.drawItem(stack, iconX, iconY);
+
+            // Draw peak indicator star if at peak
+            if (entry.isAtPeak) {
+                int starX = iconX + ICON_SIZE + 1;
+                int starY = y + (LINE_HEIGHT_ICON - textRenderer.fontHeight) / 2;
+                context.drawText(textRenderer, PEAK_INDICATOR.trim(), starX, starY, TEXT_PRIMARY, true);
+            }
         } else {
-            displayText = entry.ore.getDisplayName();
+            // Text mode: colored dot + ore name + peak star
+            String displayText = entry.ore.getDisplayName();
+            if (entry.isAtPeak) {
+                displayText += PEAK_INDICATOR;
+            }
+
+            int indicatorSize = 6;
+            int indicatorY = y + (LINE_HEIGHT_TEXT - indicatorSize) / 2;
+            context.fill(x, indicatorY, x + indicatorSize, indicatorY + indicatorSize, entry.tier.getColor());
+
+            int textX = x + indicatorSize + 4;
+            context.drawText(textRenderer, displayText, textX, y, TEXT_PRIMARY, true);
         }
-
-        // Add peak indicator if at peak
-        if (entry.isAtPeak) {
-            displayText += PEAK_INDICATOR;
-        }
-
-        // Draw colored indicator dot
-        int indicatorSize = 6;
-        int indicatorY = y + (LINE_HEIGHT - indicatorSize) / 2;
-        context.fill(x, indicatorY, x + indicatorSize, indicatorY + indicatorSize, entry.tier.getColor());
-
-        // Draw text
-        int textX = x + indicatorSize + 4;
-        context.drawText(textRenderer, displayText, textX, y, TEXT_PRIMARY, true);
     }
 
     private void updateCachedEntries(int y, Identifier biome, Dimension dimension) {
@@ -173,23 +187,28 @@ public class OreOracleOverlay {
     }
 
     private int calculateWidth(TextRenderer textRenderer) {
-        // Find the widest entry
         ModConfig config = ModConfig.getInstance();
-        int maxTextWidth = 0;
 
-        for (OreEntry entry : cachedEntries) {
-            String text = config.getDisplayMode() == ModConfig.DisplayMode.ICON
-                    ? entry.ore.getId().substring(0, Math.min(3, entry.ore.getId().length())).toUpperCase()
-                    : entry.ore.getDisplayName();
-            if (entry.isAtPeak) {
-                text += PEAK_INDICATOR;
+        if (config.getDisplayMode() == ModConfig.DisplayMode.ICON) {
+            // Icon mode: padding + indicator + gap + icon + gap + star + padding
+            // Fixed width since icons are uniform size
+            int indicatorWidth = 6 + 2; // indicator size + gap
+            int starWidth = textRenderer.getWidth(PEAK_INDICATOR.trim()) + 1;
+            return PADDING + indicatorWidth + ICON_SIZE + starWidth + PADDING;
+        } else {
+            // Text mode: find the widest entry
+            int maxTextWidth = 0;
+            for (OreEntry entry : cachedEntries) {
+                String text = entry.ore.getDisplayName();
+                if (entry.isAtPeak) {
+                    text += PEAK_INDICATOR;
+                }
+                maxTextWidth = Math.max(maxTextWidth, textRenderer.getWidth(text));
             }
-            maxTextWidth = Math.max(maxTextWidth, textRenderer.getWidth(text));
+            // Width = padding + indicator + gap + text + padding
+            int indicatorWidth = 6 + 4; // indicator size + gap
+            return Math.max(STANDARD_WIDTH, PADDING + indicatorWidth + maxTextWidth + PADDING);
         }
-
-        // Width = padding + indicator + gap + text + padding
-        int indicatorWidth = 6 + 4; // indicator size + gap
-        return Math.max(STANDARD_WIDTH, PADDING + indicatorWidth + maxTextWidth + PADDING);
     }
 
     private int calculateHeight(ModConfig config) {
@@ -200,11 +219,12 @@ public class OreOracleOverlay {
             lines++;
         }
 
-        int height = PADDING + (lines * LINE_HEIGHT) + PADDING;
+        int lineHeight = config.getDisplayMode() == ModConfig.DisplayMode.ICON ? LINE_HEIGHT_ICON : LINE_HEIGHT_TEXT;
+        int height = PADDING + (lines * lineHeight) + PADDING;
 
         // Add header height if shown
         if (config.isShowHudHeader()) {
-            height += LINE_HEIGHT + PADDING;
+            height += LINE_HEIGHT_TEXT + PADDING;
         }
 
         return height;
