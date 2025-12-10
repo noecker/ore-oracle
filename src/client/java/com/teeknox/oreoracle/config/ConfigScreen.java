@@ -30,6 +30,7 @@ public class ConfigScreen extends Screen {
     private CyclingButtonWidget<Boolean> enabledButton;
     private CyclingButtonWidget<Boolean> showHeaderButton;
     private CyclingButtonWidget<ModConfig.HudPosition> hudPositionButton;
+    private CyclingButtonWidget<ModConfig.VerticalPosition> verticalPositionButton;
     private CyclingButtonWidget<ModConfig.DisplayMode> displayModeButton;
     private MaxOresSlider maxOresSlider;
 
@@ -63,7 +64,7 @@ public class ConfigScreen extends Screen {
         addDrawableChild(showHeaderButton);
         currentY += ROW_HEIGHT;
 
-        // HUD position
+        // HUD horizontal position
         hudPositionButton = CyclingButtonWidget.<ModConfig.HudPosition>builder(position ->
                         Text.translatable("oreoracle.config.position." + position.name().toLowerCase()))
                 .values(ModConfig.HudPosition.values())
@@ -72,6 +73,17 @@ public class ConfigScreen extends Screen {
                         Text.translatable("oreoracle.config.position"),
                         (button, value) -> config.setHudPosition(value));
         addDrawableChild(hudPositionButton);
+        currentY += ROW_HEIGHT;
+
+        // HUD vertical position
+        verticalPositionButton = CyclingButtonWidget.<ModConfig.VerticalPosition>builder(position ->
+                        Text.translatable("oreoracle.config.verticalPosition." + position.name().toLowerCase()))
+                .values(ModConfig.VerticalPosition.values())
+                .initially(config.getVerticalPosition())
+                .build(contentX, currentY, buttonWidth, 20,
+                        Text.translatable("oreoracle.config.verticalPosition"),
+                        (button, value) -> config.setVerticalPosition(value));
+        addDrawableChild(verticalPositionButton);
         currentY += ROW_HEIGHT;
 
         // Display mode

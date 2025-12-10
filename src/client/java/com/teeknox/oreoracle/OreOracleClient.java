@@ -11,10 +11,10 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 
 /**
@@ -49,10 +49,15 @@ public class OreOracleClient implements ClientModInitializer {
             ModConfig.getInstance().save();
         });
 
-        // Register HUD overlay
-        HudRenderCallback.EVENT.register((context, tickCounter) -> {
-            OreOracleOverlay.getInstance().render(context, tickCounter.getTickProgress(true));
-        });
+        // Register HUD overlay using the new HudElementRegistry API
+        // Using addLast() to render after vanilla HUD elements and avoid render condition inheritance
+        // This fixes the issue where pinned F3 elements would hide the overlay
+        HudElementRegistry.addLast(
+                Identifier.of(OreOracleMod.MOD_ID, "overlay"),
+                (context, tickCounter) -> {
+                    OreOracleOverlay.getInstance().render(context, tickCounter.getTickProgress(true));
+                }
+        );
 
         // Register commands
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
