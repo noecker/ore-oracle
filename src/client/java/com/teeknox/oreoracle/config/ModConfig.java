@@ -24,6 +24,7 @@ public class ModConfig {
     private boolean enabled = true;
     private boolean showHudHeader = true;
     private HudPosition hudPosition = HudPosition.LEFT;
+    private VerticalPosition verticalPosition = VerticalPosition.TOP;
     private int overlayX = 4;
     private int overlayY = 4;
     private DisplayMode displayMode = DisplayMode.NAME;
@@ -98,6 +99,14 @@ public class ModConfig {
         this.hudPosition = hudPosition;
     }
 
+    public VerticalPosition getVerticalPosition() {
+        return verticalPosition;
+    }
+
+    public void setVerticalPosition(VerticalPosition verticalPosition) {
+        this.verticalPosition = verticalPosition;
+    }
+
     public int getOverlayX() {
         return overlayX;
     }
@@ -131,11 +140,20 @@ public class ModConfig {
     }
 
     /**
-     * HUD position on screen.
+     * HUD horizontal position on screen.
      */
     public enum HudPosition {
         LEFT,
         RIGHT
+    }
+
+    /**
+     * HUD vertical position on screen.
+     */
+    public enum VerticalPosition {
+        TOP,
+        CENTER,
+        BOTTOM
     }
 
     /**

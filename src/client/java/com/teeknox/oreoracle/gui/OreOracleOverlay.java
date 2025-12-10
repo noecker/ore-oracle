@@ -48,7 +48,7 @@ public class OreOracleOverlay {
     }
 
     /**
-     * Render the overlay. Called from HudRenderCallback.
+     * Render the overlay. Called from HudElementRegistry.
      */
     public void render(DrawContext context, float tickDelta) {
         MinecraftClient client = MinecraftClient.getInstance();
@@ -59,8 +59,8 @@ public class OreOracleOverlay {
             return;
         }
 
-        // Don't render when debug screen or other screens are open
-        if (client.getDebugHud().shouldShowDebugHud() || client.currentScreen != null) {
+        // Don't render when a screen is open
+        if (client.currentScreen != null) {
             return;
         }
 
@@ -241,9 +241,12 @@ public class OreOracleOverlay {
     }
 
     private int calculateY(ModConfig config, int screenHeight, int overlayHeight) {
-        int y = config.getOverlayY();
-        // Negative values mean from bottom edge
-        return y < 0 ? screenHeight + y - overlayHeight : y;
+        int offset = config.getOverlayY();
+        return switch (config.getVerticalPosition()) {
+            case TOP -> offset;
+            case CENTER -> (screenHeight - overlayHeight) / 2 + offset;
+            case BOTTOM -> screenHeight - overlayHeight - Math.abs(offset);
+        };
     }
 
     private boolean biomeEquals(Identifier a, Identifier b) {
