@@ -15,7 +15,8 @@
   "entrypoints": {
     "main": ["com.teeknox.oreoracle.OreOracleMod"],
     "client": ["com.teeknox.oreoracle.OreOracleClient"],
-    "modmenu": ["com.teeknox.oreoracle.config.ModMenuIntegration"]
+    "modmenu": ["com.teeknox.oreoracle.config.ModMenuIntegration"],
+    "mc-widgets": ["com.teeknox.oreoracle.OreOracleWidgetProvider"]
   },
   "mixins": [
     "ore-oracle.client.mixins.json"
@@ -27,6 +28,7 @@
     "fabric-api": "*"
   },
   "suggests": {
-    "modmenu": "*"
+    "modmenu": "*",
+    "mc-widgets": "*"
   }
 }

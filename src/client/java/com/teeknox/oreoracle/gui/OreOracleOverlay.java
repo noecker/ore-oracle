@@ -265,6 +265,87 @@ public class OreOracleOverlay {
     }
 
     /**
+     * Render the overlay within specified bounds.
+     * Used by MC Widgets integration to render within the widget's allocated space.
+     *
+     * @param context   The draw context
+     * @param x         Left edge of the render area
+     * @param y         Top edge of the render area
+     * @param width     Width of the render area
+     * @param height    Height of the render area
+     * @param tickDelta Partial tick for smooth animations
+     */
+    public void renderInBounds(DrawContext context, int x, int y, int width, int height, float tickDelta) {
+        MinecraftClient client = MinecraftClient.getInstance();
+        ModConfig config = ModConfig.getInstance();
+
+        // Don't render if disabled or no player
+        if (!config.isEnabled() || client.player == null || client.world == null) {
+            return;
+        }
+
+        // Get current state
+        int currentY = (int) client.player.getY();
+        Identifier currentBiome = BiomeChecker.getCurrentBiome(client);
+        Dimension currentDimension = Dimension.fromWorld(client.world);
+
+        // Recalculate entries if state changed
+        if (currentY != lastY || !biomeEquals(currentBiome, lastBiome) || currentDimension != lastDimension) {
+            lastY = currentY;
+            lastBiome = currentBiome;
+            lastDimension = currentDimension;
+            updateCachedEntries(currentY, currentBiome, currentDimension);
+        }
+
+        // Don't render if no entries to show
+        if (cachedEntries.isEmpty()) {
+            return;
+        }
+
+        TextRenderer textRenderer = client.textRenderer;
+
+        // Draw background (no border per STYLE_GUIDE.md)
+        context.fill(x, y, x + width, y + height, BG_OVERLAY);
+
+        // Draw content
+        int contentY = y + PADDING;
+
+        // Determine line height based on display mode
+        int lineHeight = config.getDisplayMode() == ModConfig.DisplayMode.ICON ? LINE_HEIGHT_ICON : LINE_HEIGHT_TEXT;
+
+        // Calculate how many items can fit
+        int availableHeight = height - PADDING * 2;
+        if (config.isShowHudHeader()) {
+            availableHeight -= LINE_HEIGHT_TEXT + PADDING;
+        }
+        int maxItemsByHeight = Math.max(1, availableHeight / lineHeight);
+        int maxVisible = Math.min(config.getMaxVisibleOres(), maxItemsByHeight);
+
+        // Optional header
+        if (config.isShowHudHeader()) {
+            String header = "Y: " + lastY;
+            context.drawCenteredTextWithShadow(textRenderer, header, x + width / 2, contentY, TEXT_PRIMARY);
+            contentY += LINE_HEIGHT_TEXT + PADDING;
+        }
+
+        // Draw ore entries
+        int entriesToShow = Math.min(cachedEntries.size(), maxVisible);
+
+        for (int i = 0; i < entriesToShow; i++) {
+            OreEntry entry = cachedEntries.get(i);
+            renderOreEntry(context, textRenderer, entry, x + PADDING, contentY, width - PADDING * 2, config);
+            contentY += lineHeight;
+        }
+
+        // Overflow indicator
+        int remaining = cachedEntries.size() - entriesToShow;
+        if (remaining > 0 && contentY + LINE_HEIGHT_TEXT <= y + height) {
+            String overflow = "+" + remaining + " more";
+            context.drawCenteredTextWithShadow(textRenderer, overflow, x + width / 2, contentY, TEXT_MUTED);
+        }
+    }
+
+    /**
      * Represents an ore entry to display in the HUD.
      */
     private record OreEntry(Ore ore, ProbabilityTier tier, boolean isAtPeak) {}

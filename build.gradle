@@ -40,6 +40,10 @@ dependencies {
     // Use modImplementation if you need Mod Menu classes at compile time
     // Use modCompileOnly if you only need it for optional integration
     modCompileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
+
+    // MC Widgets integration (optional at runtime)
+    // Compile-only: mod builds against API but doesn't require it at runtime
+    modCompileOnly files('../mc-widgets/build/libs/mc-widgets-1.1.0.jar')
 }
 
 processResources {

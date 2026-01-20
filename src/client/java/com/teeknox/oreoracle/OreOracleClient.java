@@ -12,6 +12,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.util.Identifier;
@@ -49,15 +50,18 @@ public class OreOracleClient implements ClientModInitializer {
             ModConfig.getInstance().save();
         });
 
-        // Register HUD overlay using the new HudElementRegistry API
-        // Using addLast() to render after vanilla HUD elements and avoid render condition inheritance
-        // This fixes the issue where pinned F3 elements would hide the overlay
-        HudElementRegistry.addLast(
-                Identifier.of(OreOracleMod.MOD_ID, "overlay"),
-                (context, tickCounter) -> {
-                    OreOracleOverlay.getInstance().render(context, tickCounter.getTickProgress(true));
-                }
-        );
+        // Register HUD overlay only if MC Widgets is not installed
+        // When MC Widgets is present, it discovers and renders our widget via OreOracleWidgetProvider
+        if (!FabricLoader.getInstance().isModLoaded("mc-widgets")) {
+            // Using addLast() to render after vanilla HUD elements and avoid render condition inheritance
+            // This fixes the issue where pinned F3 elements would hide the overlay
+            HudElementRegistry.addLast(
+                    Identifier.of(OreOracleMod.MOD_ID, "overlay"),
+                    (context, tickCounter) -> {
+                        OreOracleOverlay.getInstance().render(context, tickCounter.getTickProgress(true));
+                    }
+            );
+        }
 
         // Register commands
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
