@@ -28,6 +28,8 @@
   "oreoracle.config.displayMode.icon": "Icons",
   "oreoracle.config.displayMode.name": "Names",
   "oreoracle.config.maxOres": "Max Visible Ores: %d",
+  "oreoracle.config.mcWidgetsExplanation": "Position is managed by MC Widgets",
+  "oreoracle.config.openMcWidgets": "Open MC Widgets Settings...",
 
   "oreoracle.command.hud.enabled": "Ore Oracle HUD enabled",
   "oreoracle.command.hud.disabled": "Ore Oracle HUD disabled"

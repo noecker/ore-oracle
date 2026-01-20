@@ -1,6 +1,7 @@
 package com.teeknox.oreoracle.config;
 
 import com.teeknox.oreoracle.gui.OreOracleOverlay;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -16,6 +17,7 @@ public class ConfigScreen extends Screen {
     private static final int SETTINGS_BG = 0x80000000;
     private static final int TEXT_PRIMARY = 0xFFFFFFFF;
     private static final int TEXT_SECONDARY = 0xFF888888;
+    private static final int TEXT_MUTED = 0xFF666666;
 
     private static final int COLUMN_WIDTH = 300;
     private static final int HEADER_HEIGHT = 52;
@@ -25,6 +27,7 @@ public class ConfigScreen extends Screen {
 
     private final Screen parent;
     private final ModConfig config;
+    private final boolean mcWidgetsInstalled;
 
     // Widgets
     private CyclingButtonWidget<Boolean> enabledButton;
@@ -38,6 +41,7 @@ public class ConfigScreen extends Screen {
         super(Text.translatable("oreoracle.screen.config.title"));
         this.parent = parent;
         this.config = ModConfig.getInstance();
+        this.mcWidgetsInstalled = FabricLoader.getInstance().isModLoaded("mc-widgets");
     }
 
     @Override
@@ -64,27 +68,42 @@ public class ConfigScreen extends Screen {
         addDrawableChild(showHeaderButton);
         currentY += ROW_HEIGHT;
 
-        // HUD horizontal position
-        hudPositionButton = CyclingButtonWidget.<ModConfig.HudPosition>builder(position ->
-                        Text.translatable("oreoracle.config.position." + position.name().toLowerCase()))
-                .values(ModConfig.HudPosition.values())
-                .initially(config.getHudPosition())
-                .build(contentX, currentY, buttonWidth, 20,
-                        Text.translatable("oreoracle.config.position"),
-                        (button, value) -> config.setHudPosition(value));
-        addDrawableChild(hudPositionButton);
-        currentY += ROW_HEIGHT;
+        if (mcWidgetsInstalled) {
+            // MC Widgets is installed - show explanation and button instead of position options
+            // Space for the explanation text (rendered in render())
+            currentY += ROW_HEIGHT;
 
-        // HUD vertical position
-        verticalPositionButton = CyclingButtonWidget.<ModConfig.VerticalPosition>builder(position ->
-                        Text.translatable("oreoracle.config.verticalPosition." + position.name().toLowerCase()))
-                .values(ModConfig.VerticalPosition.values())
-                .initially(config.getVerticalPosition())
-                .build(contentX, currentY, buttonWidth, 20,
-                        Text.translatable("oreoracle.config.verticalPosition"),
-                        (button, value) -> config.setVerticalPosition(value));
-        addDrawableChild(verticalPositionButton);
-        currentY += ROW_HEIGHT;
+            // Button to open MC Widgets config
+            addDrawableChild(ButtonWidget.builder(
+                            Text.translatable("oreoracle.config.openMcWidgets"),
+                            btn -> openMcWidgetsConfig())
+                    .dimensions(contentX, currentY, buttonWidth, 20)
+                    .build());
+            currentY += ROW_HEIGHT;
+        } else {
+            // MC Widgets not installed - show normal position options
+            // HUD horizontal position
+            hudPositionButton = CyclingButtonWidget.<ModConfig.HudPosition>builder(position ->
+                            Text.translatable("oreoracle.config.position." + position.name().toLowerCase()))
+                    .values(ModConfig.HudPosition.values())
+                    .initially(config.getHudPosition())
+                    .build(contentX, currentY, buttonWidth, 20,
+                            Text.translatable("oreoracle.config.position"),
+                            (button, value) -> config.setHudPosition(value));
+            addDrawableChild(hudPositionButton);
+            currentY += ROW_HEIGHT;
+
+            // HUD vertical position
+            verticalPositionButton = CyclingButtonWidget.<ModConfig.VerticalPosition>builder(position ->
+                            Text.translatable("oreoracle.config.verticalPosition." + position.name().toLowerCase()))
+                    .values(ModConfig.VerticalPosition.values())
+                    .initially(config.getVerticalPosition())
+                    .build(contentX, currentY, buttonWidth, 20,
+                            Text.translatable("oreoracle.config.verticalPosition"),
+                            (button, value) -> config.setVerticalPosition(value));
+            addDrawableChild(verticalPositionButton);
+            currentY += ROW_HEIGHT;
+        }
 
         // Display mode
         displayModeButton = CyclingButtonWidget.<ModConfig.DisplayMode>builder(mode ->
@@ -123,8 +142,30 @@ public class ConfigScreen extends Screen {
         Text subtitle = Text.translatable("oreoracle.screen.config.subtitle");
         context.drawCenteredTextWithShadow(this.textRenderer, subtitle, this.width / 2, 30, TEXT_SECONDARY);
 
+        // MC Widgets explanation text (if installed)
+        if (mcWidgetsInstalled) {
+            int explanationY = HEADER_HEIGHT + ROW_HEIGHT * 2 + 4;
+            Text explanation = Text.translatable("oreoracle.config.mcWidgetsExplanation");
+            context.drawCenteredTextWithShadow(this.textRenderer, explanation, this.width / 2, explanationY, TEXT_MUTED);
+        }
+
         // Render widgets
         super.render(context, mouseX, mouseY, delta);
+    }
+
+    private void openMcWidgetsConfig() {
+        if (this.client == null) return;
+
+        // Try to open MC Widgets config screen via reflection to avoid hard dependency
+        try {
+            Class<?> mcWidgetsConfigClass = Class.forName("com.teeknox.mcwidgets.config.McWidgetsConfigScreen");
+            var constructor = mcWidgetsConfigClass.getConstructor(Screen.class);
+            Screen mcWidgetsScreen = (Screen) constructor.newInstance(this);
+            this.client.setScreen(mcWidgetsScreen);
+        } catch (Exception e) {
+            // Fallback: MC Widgets config screen not accessible
+            // Could show a message, but for now just do nothing
+        }
     }
 
     @Override
