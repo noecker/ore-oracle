@@ -73,10 +73,10 @@ This ensures your mod works for all users, with enhanced functionality for those
 // build.gradle
 dependencies {
     // Compile-only: your mod builds against the API but doesn't require it at runtime
-    modCompileOnly files('../mc-widgets/build/libs/mc-widgets-1.1.0.jar')
+    modCompileOnly files('../mc-widgets/build/libs/mc-widgets-0.1.0.jar')
 
     // Or when published to Maven:
-    // modCompileOnly "com.teeknox:mc-widgets:1.1.0"
+    // modCompileOnly "com.teeknox:mc-widgets:0.1.0"
 }
 ```
 
@@ -156,7 +156,7 @@ Add MC Widgets as a compile-only dependency. This means:
 ```gradle
 dependencies {
     // During development, reference the local JAR
-    modCompileOnly files('../mc-widgets/build/libs/mc-widgets-1.1.0.jar')
+    modCompileOnly files('../mc-widgets/build/libs/mc-widgets-0.1.0.jar')
 }
 ```
 
@@ -983,7 +983,7 @@ if (!FabricLoader.getInstance().isModLoaded("mc-widgets")) {
 Ensure MC Widgets JAR is built and the path in `build.gradle` is correct:
 
 ```gradle
-modCompileOnly files('../mc-widgets/build/libs/mc-widgets-1.1.0.jar')
+modCompileOnly files('../mc-widgets/build/libs/mc-widgets-0.1.0.jar')
 ```
 
 Run `./gradlew build` in the MC Widgets project first.
