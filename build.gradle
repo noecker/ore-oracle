@@ -43,7 +43,7 @@ dependencies {
 
     // MC Widgets integration (optional at runtime)
     // Compile-only: mod builds against API but doesn't require it at runtime
-    modCompileOnly files('../mc-widgets/build/libs/mc-widgets-1.1.0.jar')
+    modCompileOnly files('../mc-widgets/build/libs/mc-widgets-0.1.0.jar')
 }
 
 processResources {
