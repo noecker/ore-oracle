@@ -2,12 +2,12 @@ package com.teeknox.oreoracle.config;
 
 import com.teeknox.oreoracle.gui.OreOracleOverlay;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.CyclingButtonWidget;
-import net.minecraft.client.gui.widget.SliderWidget;
-import net.minecraft.text.Text;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.AbstractSliderButton;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.CycleButton;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
 
 /**
  * Configuration screen for Ore Oracle settings.
@@ -30,15 +30,15 @@ public class ConfigScreen extends Screen {
     private final boolean mcWidgetsInstalled;
 
     // Widgets
-    private CyclingButtonWidget<Boolean> enabledButton;
-    private CyclingButtonWidget<Boolean> showHeaderButton;
-    private CyclingButtonWidget<ModConfig.HudPosition> hudPositionButton;
-    private CyclingButtonWidget<ModConfig.VerticalPosition> verticalPositionButton;
-    private CyclingButtonWidget<ModConfig.DisplayMode> displayModeButton;
+    private CycleButton<Boolean> enabledButton;
+    private CycleButton<Boolean> showHeaderButton;
+    private CycleButton<ModConfig.HudPosition> hudPositionButton;
+    private CycleButton<ModConfig.VerticalPosition> verticalPositionButton;
+    private CycleButton<ModConfig.DisplayMode> displayModeButton;
     private MaxOresSlider maxOresSlider;
 
     public ConfigScreen(Screen parent) {
-        super(Text.translatable("oreoracle.screen.config.title"));
+        super(Component.translatable("oreoracle.screen.config.title"));
         this.parent = parent;
         this.config = ModConfig.getInstance();
         this.mcWidgetsInstalled = FabricLoader.getInstance().isModLoaded("mc-widgets");
@@ -53,19 +53,19 @@ public class ConfigScreen extends Screen {
         int currentY = HEADER_HEIGHT;
 
         // Enabled toggle
-        enabledButton = CyclingButtonWidget.onOffBuilder(config.isEnabled())
-                .build(contentX, currentY, buttonWidth, 20,
-                        Text.translatable("oreoracle.config.enabled"),
+        enabledButton = CycleButton.onOffBuilder(config.isEnabled())
+                .create(contentX, currentY, buttonWidth, 20,
+                        Component.translatable("oreoracle.config.enabled"),
                         (button, value) -> config.setEnabled(value));
-        addDrawableChild(enabledButton);
+        addRenderableWidget(enabledButton);
         currentY += ROW_HEIGHT;
 
         // Show header toggle
-        showHeaderButton = CyclingButtonWidget.onOffBuilder(config.isShowHudHeader())
-                .build(contentX, currentY, buttonWidth, 20,
-                        Text.translatable("oreoracle.config.showHeader"),
+        showHeaderButton = CycleButton.onOffBuilder(config.isShowHudHeader())
+                .create(contentX, currentY, buttonWidth, 20,
+                        Component.translatable("oreoracle.config.showHeader"),
                         (button, value) -> config.setShowHudHeader(value));
-        addDrawableChild(showHeaderButton);
+        addRenderableWidget(showHeaderButton);
         currentY += ROW_HEIGHT;
 
         if (mcWidgetsInstalled) {
@@ -74,94 +74,94 @@ public class ConfigScreen extends Screen {
             currentY += ROW_HEIGHT;
 
             // Button to open MC Widgets config
-            addDrawableChild(ButtonWidget.builder(
-                            Text.translatable("oreoracle.config.openMcWidgets"),
+            addRenderableWidget(Button.builder(
+                            Component.translatable("oreoracle.config.openMcWidgets"),
                             btn -> openMcWidgetsConfig())
-                    .dimensions(contentX, currentY, buttonWidth, 20)
+                    .bounds(contentX, currentY, buttonWidth, 20)
                     .build());
             currentY += ROW_HEIGHT;
         } else {
             // MC Widgets not installed - show normal position options
             // HUD horizontal position
-            hudPositionButton = CyclingButtonWidget.<ModConfig.HudPosition>builder(position ->
-                            Text.translatable("oreoracle.config.position." + position.name().toLowerCase()))
-                    .values(ModConfig.HudPosition.values())
-                    .initially(config.getHudPosition())
-                    .build(contentX, currentY, buttonWidth, 20,
-                            Text.translatable("oreoracle.config.position"),
+            hudPositionButton = CycleButton.<ModConfig.HudPosition>builder(position ->
+                            Component.translatable("oreoracle.config.position." + position.name().toLowerCase()),
+                            config.getHudPosition())
+                    .withValues(ModConfig.HudPosition.values())
+                    .create(contentX, currentY, buttonWidth, 20,
+                            Component.translatable("oreoracle.config.position"),
                             (button, value) -> config.setHudPosition(value));
-            addDrawableChild(hudPositionButton);
+            addRenderableWidget(hudPositionButton);
             currentY += ROW_HEIGHT;
 
             // HUD vertical position
-            verticalPositionButton = CyclingButtonWidget.<ModConfig.VerticalPosition>builder(position ->
-                            Text.translatable("oreoracle.config.verticalPosition." + position.name().toLowerCase()))
-                    .values(ModConfig.VerticalPosition.values())
-                    .initially(config.getVerticalPosition())
-                    .build(contentX, currentY, buttonWidth, 20,
-                            Text.translatable("oreoracle.config.verticalPosition"),
+            verticalPositionButton = CycleButton.<ModConfig.VerticalPosition>builder(position ->
+                            Component.translatable("oreoracle.config.verticalPosition." + position.name().toLowerCase()),
+                            config.getVerticalPosition())
+                    .withValues(ModConfig.VerticalPosition.values())
+                    .create(contentX, currentY, buttonWidth, 20,
+                            Component.translatable("oreoracle.config.verticalPosition"),
                             (button, value) -> config.setVerticalPosition(value));
-            addDrawableChild(verticalPositionButton);
+            addRenderableWidget(verticalPositionButton);
             currentY += ROW_HEIGHT;
         }
 
         // Display mode
-        displayModeButton = CyclingButtonWidget.<ModConfig.DisplayMode>builder(mode ->
-                        Text.translatable("oreoracle.config.displayMode." + mode.name().toLowerCase()))
-                .values(ModConfig.DisplayMode.values())
-                .initially(config.getDisplayMode())
-                .build(contentX, currentY, buttonWidth, 20,
-                        Text.translatable("oreoracle.config.displayMode"),
+        displayModeButton = CycleButton.<ModConfig.DisplayMode>builder(mode ->
+                        Component.translatable("oreoracle.config.displayMode." + mode.name().toLowerCase()),
+                        config.getDisplayMode())
+                .withValues(ModConfig.DisplayMode.values())
+                .create(contentX, currentY, buttonWidth, 20,
+                        Component.translatable("oreoracle.config.displayMode"),
                         (button, value) -> config.setDisplayMode(value));
-        addDrawableChild(displayModeButton);
+        addRenderableWidget(displayModeButton);
         currentY += ROW_HEIGHT;
 
         // Max visible ores slider
         maxOresSlider = new MaxOresSlider(contentX, currentY, buttonWidth, 20,
                 config.getMaxVisibleOres());
-        addDrawableChild(maxOresSlider);
+        addRenderableWidget(maxOresSlider);
         currentY += ROW_HEIGHT;
 
         // Done button
         int buttonY = this.height - FOOTER_HEIGHT + 15;
         int doneButtonWidth = 80;
-        addDrawableChild(ButtonWidget.builder(Text.translatable("gui.done"), btn -> close())
-                .dimensions((this.width - doneButtonWidth) / 2, buttonY, doneButtonWidth, 20)
+        addRenderableWidget(Button.builder(Component.translatable("gui.done"), btn -> onClose())
+                .bounds((this.width - doneButtonWidth) / 2, buttonY, doneButtonWidth, 20)
                 .build());
     }
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
         // Dim the background
         context.fill(0, 0, this.width, this.height, SETTINGS_BG);
 
         // Centered title
-        context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 16, TEXT_PRIMARY);
+        context.centeredText(this.font, this.title, this.width / 2, 16, TEXT_PRIMARY);
 
         // Subtitle
-        Text subtitle = Text.translatable("oreoracle.screen.config.subtitle");
-        context.drawCenteredTextWithShadow(this.textRenderer, subtitle, this.width / 2, 30, TEXT_SECONDARY);
+        Component subtitle = Component.translatable("oreoracle.screen.config.subtitle");
+        context.centeredText(this.font, subtitle, this.width / 2, 30, TEXT_SECONDARY);
 
         // MC Widgets explanation text (if installed)
         if (mcWidgetsInstalled) {
             int explanationY = HEADER_HEIGHT + ROW_HEIGHT * 2 + 4;
-            Text explanation = Text.translatable("oreoracle.config.mcWidgetsExplanation");
-            context.drawCenteredTextWithShadow(this.textRenderer, explanation, this.width / 2, explanationY, TEXT_MUTED);
+            Component explanation = Component.translatable("oreoracle.config.mcWidgetsExplanation");
+            context.centeredText(this.font, explanation, this.width / 2, explanationY, TEXT_MUTED);
         }
 
         // Render widgets
-        super.render(context, mouseX, mouseY, delta);
+        super.extractRenderState(context, mouseX, mouseY, delta);
     }
 
     private void openMcWidgetsConfig() {
-        if (this.client == null) return;
+        if (this.minecraft == null) return;
 
         // Try to open MC Widgets config screen via reflection to avoid hard dependency
         try {
             Class<?> mcWidgetsConfigClass = Class.forName("com.teeknox.mcwidgets.config.McWidgetsConfigScreen");
             var constructor = mcWidgetsConfigClass.getConstructor(Screen.class);
             Screen mcWidgetsScreen = (Screen) constructor.newInstance(this);
-            this.client.setScreen(mcWidgetsScreen);
+            this.minecraft.gui.setScreen(mcWidgetsScreen);
         } catch (Exception e) {
             // Fallback: MC Widgets config screen not accessible
             // Could show a message, but for now just do nothing
@@ -169,36 +169,36 @@ public class ConfigScreen extends Screen {
     }
 
     @Override
-    public void close() {
+    public void onClose() {
         config.save();
         OreOracleOverlay.getInstance().invalidateCache();
-        if (this.client != null) {
-            this.client.setScreen(parent);
+        if (this.minecraft != null) {
+            this.minecraft.gui.setScreen(parent);
         }
     }
 
     @Override
-    public boolean shouldPause() {
+    public boolean isPauseScreen() {
         return false;
     }
 
     /**
      * Custom slider for max visible ores setting.
      */
-    private class MaxOresSlider extends SliderWidget {
+    private class MaxOresSlider extends AbstractSliderButton {
         private static final int MIN_VALUE = 3;
         private static final int MAX_VALUE = 15;
 
         public MaxOresSlider(int x, int y, int width, int height, int currentValue) {
             super(x, y, width, height,
-                    Text.translatable("oreoracle.config.maxOres", currentValue),
+                    Component.translatable("oreoracle.config.maxOres", currentValue),
                     (currentValue - MIN_VALUE) / (double) (MAX_VALUE - MIN_VALUE));
         }
 
         @Override
         protected void updateMessage() {
             int value = getValue();
-            setMessage(Text.translatable("oreoracle.config.maxOres", value));
+            setMessage(Component.translatable("oreoracle.config.maxOres", value));
         }
 
         @Override

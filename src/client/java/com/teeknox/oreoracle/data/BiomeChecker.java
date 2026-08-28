@@ -1,14 +1,14 @@
 package com.teeknox.oreoracle.data;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.biome.Biome;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.level.biome.Biome;
 
 /**
  * Utility class for checking biomes relevant to ore spawning.
@@ -19,25 +19,25 @@ public class BiomeChecker {
      * Mountain biomes where Emerald can spawn.
      */
     private static final Set<Identifier> MOUNTAIN_BIOMES = Set.of(
-            Identifier.of("minecraft", "meadow"),
-            Identifier.of("minecraft", "cherry_grove"),
-            Identifier.of("minecraft", "grove"),
-            Identifier.of("minecraft", "snowy_slopes"),
-            Identifier.of("minecraft", "jagged_peaks"),
-            Identifier.of("minecraft", "frozen_peaks"),
-            Identifier.of("minecraft", "stony_peaks"),
-            Identifier.of("minecraft", "windswept_hills"),
-            Identifier.of("minecraft", "windswept_gravelly_hills"),
-            Identifier.of("minecraft", "windswept_forest")
+            Identifier.fromNamespaceAndPath("minecraft", "meadow"),
+            Identifier.fromNamespaceAndPath("minecraft", "cherry_grove"),
+            Identifier.fromNamespaceAndPath("minecraft", "grove"),
+            Identifier.fromNamespaceAndPath("minecraft", "snowy_slopes"),
+            Identifier.fromNamespaceAndPath("minecraft", "jagged_peaks"),
+            Identifier.fromNamespaceAndPath("minecraft", "frozen_peaks"),
+            Identifier.fromNamespaceAndPath("minecraft", "stony_peaks"),
+            Identifier.fromNamespaceAndPath("minecraft", "windswept_hills"),
+            Identifier.fromNamespaceAndPath("minecraft", "windswept_gravelly_hills"),
+            Identifier.fromNamespaceAndPath("minecraft", "windswept_forest")
     );
 
     /**
      * Badlands biomes where Gold spawns up to Y=255.
      */
     private static final Set<Identifier> BADLANDS_BIOMES = Set.of(
-            Identifier.of("minecraft", "badlands"),
-            Identifier.of("minecraft", "wooded_badlands"),
-            Identifier.of("minecraft", "eroded_badlands")
+            Identifier.fromNamespaceAndPath("minecraft", "badlands"),
+            Identifier.fromNamespaceAndPath("minecraft", "wooded_badlands"),
+            Identifier.fromNamespaceAndPath("minecraft", "eroded_badlands")
     );
 
     /**
@@ -58,16 +58,16 @@ public class BiomeChecker {
      * Get the current biome at the player's position.
      */
     @Nullable
-    public static Identifier getCurrentBiome(MinecraftClient client) {
-        if (client.player == null || client.world == null) {
+    public static Identifier getCurrentBiome(Minecraft client) {
+        if (client.player == null || client.level == null) {
             return null;
         }
 
-        BlockPos pos = client.player.getBlockPos();
-        RegistryEntry<Biome> biomeEntry = client.world.getBiome(pos);
+        BlockPos pos = client.player.blockPosition();
+        Holder<Biome> biomeEntry = client.level.getBiome(pos);
 
-        return biomeEntry.getKey()
-                .map(RegistryKey::getValue)
+        return biomeEntry.unwrapKey()
+                .map(ResourceKey::identifier)
                 .orElse(null);
     }
 }

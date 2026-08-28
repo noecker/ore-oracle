@@ -1,5 +1,6 @@
 package com.teeknox.oreoracle;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.teeknox.oreoracle.command.OreOracleCommand;
 import com.teeknox.oreoracle.config.ModConfig;
 import com.teeknox.oreoracle.config.ServerDataManager;
@@ -9,13 +10,12 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.resources.Identifier;
 import org.lwjgl.glfw.GLFW;
 
 /**
@@ -23,11 +23,11 @@ import org.lwjgl.glfw.GLFW;
  * Sets up HUD overlay, commands, and keybindings.
  */
 public class OreOracleClient implements ClientModInitializer {
-    private static final KeyBinding.Category KEYBIND_CATEGORY = KeyBinding.Category.MISC;
+    private static final KeyMapping.Category KEYBIND_CATEGORY = KeyMapping.Category.MISC;
 
     // Keybindings (unbound by default per spec)
-    private static KeyBinding openSelectorKey;
-    private static KeyBinding toggleHudKey;
+    private static KeyMapping openSelectorKey;
+    private static KeyMapping toggleHudKey;
 
     @Override
     public void onInitializeClient() {
@@ -56,9 +56,9 @@ public class OreOracleClient implements ClientModInitializer {
             // Using addLast() to render after vanilla HUD elements and avoid render condition inheritance
             // This fixes the issue where pinned F3 elements would hide the overlay
             HudElementRegistry.addLast(
-                    Identifier.of(OreOracleMod.MOD_ID, "overlay"),
+                    Identifier.fromNamespaceAndPath(OreOracleMod.MOD_ID, "overlay"),
                     (context, tickCounter) -> {
-                        OreOracleOverlay.getInstance().render(context, tickCounter.getTickProgress(true));
+                        OreOracleOverlay.getInstance().render(context, tickCounter.getGameTimeDeltaPartialTick(true));
                     }
             );
         }
@@ -69,29 +69,29 @@ public class OreOracleClient implements ClientModInitializer {
         });
 
         // Register keybindings (unbound by default)
-        openSelectorKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+        openSelectorKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "key.oreoracle.open_selector",
-                InputUtil.Type.KEYSYM,
+                InputConstants.Type.KEYSYM,
                 GLFW.GLFW_KEY_UNKNOWN,
                 KEYBIND_CATEGORY
         ));
 
-        toggleHudKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+        toggleHudKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "key.oreoracle.toggle_hud",
-                InputUtil.Type.KEYSYM,
+                InputConstants.Type.KEYSYM,
                 GLFW.GLFW_KEY_UNKNOWN,
                 KEYBIND_CATEGORY
         ));
 
         // Handle keybind presses
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            while (openSelectorKey.wasPressed()) {
-                if (client.currentScreen == null) {
-                    client.setScreen(new OreSelectorScreen(null));
+            while (openSelectorKey.consumeClick()) {
+                if (client.gui.screen() == null) {
+                    client.gui.setScreen(new OreSelectorScreen(null));
                 }
             }
 
-            while (toggleHudKey.wasPressed()) {
+            while (toggleHudKey.consumeClick()) {
                 ModConfig config = ModConfig.getInstance();
                 config.setEnabled(!config.isEnabled());
                 config.save();

@@ -6,8 +6,7 @@ import com.teeknox.oreoracle.OreOracleMod;
 import com.teeknox.oreoracle.data.Ore;
 import com.teeknox.oreoracle.data.ProbabilityTier;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ServerInfo;
+import net.minecraft.client.Minecraft;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -169,21 +168,21 @@ public class ServerDataManager {
      */
     @Nullable
     private String getServerId() {
-        MinecraftClient client = MinecraftClient.getInstance();
-        if (client.world == null) {
+        Minecraft client = Minecraft.getInstance();
+        if (client.level == null) {
             return null;
         }
 
         // Check if on a server
-        ServerInfo serverInfo = client.getCurrentServerEntry();
+        net.minecraft.client.multiplayer.ServerData serverInfo = client.getCurrentServer();
         if (serverInfo != null) {
             // Multiplayer server - use address
-            return sanitize(serverInfo.address);
+            return sanitize(serverInfo.ip);
         }
 
         // Singleplayer - use world name
-        if (client.isIntegratedServerRunning() && client.getServer() != null) {
-            String worldName = client.getServer().getSaveProperties().getLevelName();
+        if (client.hasSingleplayerServer() && client.getSingleplayerServer() != null) {
+            String worldName = client.getSingleplayerServer().getWorldData().getLevelName();
             return "singleplayer_" + sanitize(worldName);
         }
 

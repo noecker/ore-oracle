@@ -1,6 +1,6 @@
 package com.teeknox.oreoracle.data;
 
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 /**

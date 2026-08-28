@@ -2,16 +2,15 @@ package com.teeknox.oreoracle.gui;
 
 import com.teeknox.oreoracle.config.ServerDataManager;
 import com.teeknox.oreoracle.data.*;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 
 /**
  * Screen for selecting which ores to track and setting probability filters.
@@ -54,13 +53,13 @@ public class OreSelectorScreen extends Screen {
     private int scrollbarDragOffset = 0;
 
     // Filter buttons
-    private ButtonWidget greenFilterBtn;
-    private ButtonWidget yellowFilterBtn;
-    private ButtonWidget allFilterBtn;
-    private ButtonWidget specificFilterBtn;
+    private Button greenFilterBtn;
+    private Button yellowFilterBtn;
+    private Button allFilterBtn;
+    private Button specificFilterBtn;
 
     public OreSelectorScreen(Screen parent) {
-        super(Text.translatable("oreoracle.screen.selector.title"));
+        super(Component.translatable("oreoracle.screen.selector.title"));
         this.parent = parent;
     }
 
@@ -81,41 +80,41 @@ public class OreSelectorScreen extends Screen {
 
         ProbabilityTier currentFilter = ServerDataManager.getInstance().getProbabilityFilter();
 
-        greenFilterBtn = ButtonWidget.builder(Text.translatable("oreoracle.filter.green"), btn -> setFilter(ProbabilityTier.GREEN))
-                .dimensions(filterStartX, filterY, filterBtnWidth, FILTER_BUTTON_HEIGHT)
+        greenFilterBtn = Button.builder(Component.translatable("oreoracle.filter.green"), btn -> setFilter(ProbabilityTier.GREEN))
+                .bounds(filterStartX, filterY, filterBtnWidth, FILTER_BUTTON_HEIGHT)
                 .build();
-        yellowFilterBtn = ButtonWidget.builder(Text.translatable("oreoracle.filter.yellow"), btn -> setFilter(ProbabilityTier.YELLOW))
-                .dimensions(filterStartX + filterBtnWidth + filterSpacing, filterY, filterBtnWidth, FILTER_BUTTON_HEIGHT)
+        yellowFilterBtn = Button.builder(Component.translatable("oreoracle.filter.yellow"), btn -> setFilter(ProbabilityTier.YELLOW))
+                .bounds(filterStartX + filterBtnWidth + filterSpacing, filterY, filterBtnWidth, FILTER_BUTTON_HEIGHT)
                 .build();
-        allFilterBtn = ButtonWidget.builder(Text.translatable("oreoracle.filter.all"), btn -> setFilter(ProbabilityTier.RED))
-                .dimensions(filterStartX + (filterBtnWidth + filterSpacing) * 2, filterY, filterBtnWidth, FILTER_BUTTON_HEIGHT)
+        allFilterBtn = Button.builder(Component.translatable("oreoracle.filter.all"), btn -> setFilter(ProbabilityTier.RED))
+                .bounds(filterStartX + (filterBtnWidth + filterSpacing) * 2, filterY, filterBtnWidth, FILTER_BUTTON_HEIGHT)
                 .build();
-        specificFilterBtn = ButtonWidget.builder(Text.translatable("oreoracle.filter.specific"), btn -> setFilter(ProbabilityTier.NONE))
-                .dimensions(filterStartX + (filterBtnWidth + filterSpacing) * 3, filterY, filterBtnWidth, FILTER_BUTTON_HEIGHT)
+        specificFilterBtn = Button.builder(Component.translatable("oreoracle.filter.specific"), btn -> setFilter(ProbabilityTier.NONE))
+                .bounds(filterStartX + (filterBtnWidth + filterSpacing) * 3, filterY, filterBtnWidth, FILTER_BUTTON_HEIGHT)
                 .build();
 
-        addDrawableChild(greenFilterBtn);
-        addDrawableChild(yellowFilterBtn);
-        addDrawableChild(allFilterBtn);
-        addDrawableChild(specificFilterBtn);
+        addRenderableWidget(greenFilterBtn);
+        addRenderableWidget(yellowFilterBtn);
+        addRenderableWidget(allFilterBtn);
+        addRenderableWidget(specificFilterBtn);
 
         updateFilterButtonStyles();
 
         // Done button (centered at bottom)
         int buttonWidth = 80;
-        addDrawableChild(ButtonWidget.builder(Text.translatable("gui.done"), btn -> close())
-                .dimensions((this.width - buttonWidth) / 2, buttonY, buttonWidth, 20)
+        addRenderableWidget(Button.builder(Component.translatable("gui.done"), btn -> onClose())
+                .bounds((this.width - buttonWidth) / 2, buttonY, buttonWidth, 20)
                 .build());
     }
 
     private void buildOreEntries() {
         oreEntries = new ArrayList<>();
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
 
         // Get current dimension to show relevant ores first
         Dimension currentDimension = null;
-        if (client.world != null) {
-            currentDimension = Dimension.fromWorld(client.world);
+        if (client.level != null) {
+            currentDimension = Dimension.fromWorld(client.level);
         }
 
         // Add current dimension ores first
@@ -164,16 +163,16 @@ public class OreSelectorScreen extends Screen {
     }
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
         // Dim the background
         context.fill(0, 0, this.width, this.height, SETTINGS_BG);
 
         // Centered title
-        context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 16, TEXT_PRIMARY);
+        context.centeredText(this.font, this.title, this.width / 2, 16, TEXT_PRIMARY);
 
         // Subtitle
-        Text subtitle = Text.translatable("oreoracle.screen.selector.subtitle");
-        context.drawCenteredTextWithShadow(this.textRenderer, subtitle, this.width / 2, 30, TEXT_SECONDARY);
+        Component subtitle = Component.translatable("oreoracle.screen.selector.subtitle");
+        context.centeredText(this.font, subtitle, this.width / 2, 30, TEXT_SECONDARY);
 
         // Calculate content area
         int columnX = (this.width - COLUMN_WIDTH) / 2;
@@ -201,10 +200,10 @@ public class OreSelectorScreen extends Screen {
         }
 
         // Render widgets (buttons)
-        super.render(context, mouseX, mouseY, delta);
+        super.extractRenderState(context, mouseX, mouseY, delta);
     }
 
-    private void renderOreEntry(DrawContext context, OreEntry entry, int x, int y, int mouseX, int mouseY) {
+    private void renderOreEntry(GuiGraphicsExtractor context, OreEntry entry, int x, int y, int mouseX, int mouseY) {
         ServerDataManager serverData = ServerDataManager.getInstance();
         boolean isTracked = serverData.isOreTracked(entry.ore);
 
@@ -217,7 +216,7 @@ public class OreSelectorScreen extends Screen {
         int textColor = isTracked ? TEXT_PRIMARY : SETTINGS_UNSELECTED;
 
         // Get current tier for this ore
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         Identifier biome = BiomeChecker.getCurrentBiome(client);
         int currentY = client.player != null ? (int) client.player.getY() : 0;
         ProbabilityTier tier = OreDistribution.getTier(entry.ore, currentY, biome);
@@ -235,10 +234,10 @@ public class OreSelectorScreen extends Screen {
         if (entry.ore.getDimension() != Dimension.OVERWORLD) {
             displayName += " (" + entry.ore.getDimension().name().charAt(0) + ")";
         }
-        context.drawText(this.textRenderer, displayName, textX, y + 5, textColor, false);
+        context.text(this.font, displayName, textX, y + 5, textColor, false);
     }
 
-    private void drawCheckbox(DrawContext context, int x, int y, boolean checked) {
+    private void drawCheckbox(GuiGraphicsExtractor context, int x, int y, boolean checked) {
         // Outer border
         context.fill(x, y, x + CHECKBOX_SIZE, y + 1, SETTINGS_CHECKBOX_OUTLINE);
         context.fill(x, y + CHECKBOX_SIZE - 1, x + CHECKBOX_SIZE, y + CHECKBOX_SIZE, SETTINGS_CHECKBOX_OUTLINE);
@@ -251,7 +250,7 @@ public class OreSelectorScreen extends Screen {
         }
     }
 
-    private void renderScrollbar(DrawContext context, int x, int y, int height, int mouseX, int mouseY) {
+    private void renderScrollbar(GuiGraphicsExtractor context, int x, int y, int height, int mouseX, int mouseY) {
         // Track
         context.fill(x, y, x + SCROLLBAR_WIDTH, y + height, SCROLLBAR_TRACK_MODAL);
 
@@ -351,7 +350,7 @@ public class OreSelectorScreen extends Screen {
     }
 
     @Override
-    public boolean mouseClicked(Click click, boolean bl) {
+    public boolean mouseClicked(MouseButtonEvent click, boolean bl) {
         if (handleClick(click.x(), click.y(), click.button())) {
             return true;
         }
@@ -359,13 +358,13 @@ public class OreSelectorScreen extends Screen {
     }
 
     @Override
-    public boolean mouseReleased(Click click) {
+    public boolean mouseReleased(MouseButtonEvent click) {
         handleRelease(click.button());
         return super.mouseReleased(click);
     }
 
     @Override
-    public boolean mouseDragged(Click click, double deltaX, double deltaY) {
+    public boolean mouseDragged(MouseButtonEvent click, double deltaX, double deltaY) {
         if (handleDrag(click.y())) {
             return true;
         }
@@ -391,14 +390,14 @@ public class OreSelectorScreen extends Screen {
     }
 
     @Override
-    public void close() {
-        if (this.client != null) {
-            this.client.setScreen(parent);
+    public void onClose() {
+        if (this.minecraft != null) {
+            this.minecraft.gui.setScreen(parent);
         }
     }
 
     @Override
-    public boolean shouldPause() {
+    public boolean isPauseScreen() {
         return false;
     }
 
