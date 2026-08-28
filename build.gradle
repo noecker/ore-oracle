@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '1.13-SNAPSHOT'
+    id 'net.fabricmc.fabric-loom' version "${loom_version}"
     id 'maven-publish'
     id 'java'
 }
@@ -30,20 +30,32 @@ loom {
     }
 }
 
+// Compile-only stub of the MC Widgets API (26.x types), so the optional
+// integration links now and works as soon as a 26.x mc-widgets is installed.
+// Never packaged into the jar; the real classes come from mc-widgets at runtime.
+// Replace with a compileOnly dep on the real jar once mc-widgets is ported.
+sourceSets {
+    mcwidgetsStub
+}
+afterEvaluate {
+    // Capture the client classpath first, then extend it with the stub output,
+    // so the stub compiles against Minecraft/Fabric without a circular dependency.
+    def clientClasspath = sourceSets.client.compileClasspath
+    sourceSets.mcwidgetsStub.compileClasspath += clientClasspath
+    sourceSets.client.compileClasspath = clientClasspath + sourceSets.mcwidgetsStub.output
+}
+
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
     // Mod Menu integration (optional at runtime)
-    // Use modImplementation if you need Mod Menu classes at compile time
-    // Use modCompileOnly if you only need it for optional integration
-    modCompileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
+    compileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
 
-    // MC Widgets integration (optional at runtime)
-    // Compile-only: mod builds against API but doesn't require it at runtime
-    modCompileOnly files('../mc-widgets/build/libs/mc-widgets-0.1.0.jar')
+    // MC Widgets integration (optional at runtime) compiles against the local
+    // 26.x API stub in src/mcwidgetsStub (wired onto the client classpath above)
+    // until mc-widgets publishes a 26.x jar
 }
 
 processResources {
@@ -56,13 +68,13 @@ processResources {
 }
 
 tasks.withType(JavaCompile).configureEach {
-    it.options.release = 21
+    it.options.release = 25
 }
 
 java {
     withSourcesJar()
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
 }
 
 jar {

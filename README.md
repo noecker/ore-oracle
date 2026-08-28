@@ -64,17 +64,17 @@ Settings are accessible via [Mod Menu](https://modrinth.com/mod/modmenu) or by e
 
 | Component | Version |
 |-----------|---------|
-| Minecraft | 1.21.10 |
-| Fabric Loader | ≥0.18.0 |
+| Minecraft | 26.2 |
+| Fabric Loader | ≥0.19.3 |
 | Fabric API | Required |
-| Java | ≥21 |
+| Java | ≥25 |
 
 **Optional:**
 - [Mod Menu](https://modrinth.com/mod/modmenu) — For in-game settings access
 
 ## Installation
 
-1. Install [Fabric Loader](https://fabricmc.net/use/installer/) for Minecraft 1.21.10
+1. Install [Fabric Loader](https://fabricmc.net/use/installer/) for Minecraft 26.2
 2. Download and install [Fabric API](https://modrinth.com/mod/fabric-api)
 3. Download Ore Oracle and place in your `mods` folder
 4. Launch the game!

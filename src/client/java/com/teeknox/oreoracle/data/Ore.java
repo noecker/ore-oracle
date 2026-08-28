@@ -1,7 +1,7 @@
 package com.teeknox.oreoracle.data;
 
-import net.minecraft.item.Item;
-import net.minecraft.item.Items;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 
 /**
  * Enum representing all vanilla ores with their distribution properties.

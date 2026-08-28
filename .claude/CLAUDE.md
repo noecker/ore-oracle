@@ -11,11 +11,11 @@
 
 | Component | Version |
 |-----------|---------|
-| Minecraft | 1.21.10 |
-| Fabric Loader | 0.18.1 |
-| Fabric API | 0.138.3+1.21.10 |
-| Java | 21 |
-| Yarn Mappings | 1.21.10+build.2 |
+| Minecraft | 26.2 |
+| Fabric Loader | 0.19.3 |
+| Fabric API | 0.158.0+26.2 |
+| Java | 25 |
+| Mappings | Mojang (unobfuscated as of 26.1; Yarn discontinued) |
 
 ## Core Feature Specification
 

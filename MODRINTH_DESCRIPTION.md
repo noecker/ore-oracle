@@ -91,8 +91,8 @@ Access settings via **Mod Menu** or edit `config/ore-oracle-config.json`:
 
 ## Requirements
 
-- **Minecraft** 1.21.10
-- **Fabric Loader** 0.18.0+
+- **Minecraft** 26.2
+- **Fabric Loader** 0.19.3+
 - **Fabric API**
 
 **Optional:** [Mod Menu](https://modrinth.com/mod/modmenu) for in-game settings

@@ -3,14 +3,13 @@ package com.teeknox.oreoracle.gui;
 import com.teeknox.oreoracle.config.ModConfig;
 import com.teeknox.oreoracle.config.ServerDataManager;
 import com.teeknox.oreoracle.data.*;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Identifier;
-
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * HUD overlay that displays ore probability information based on the player's Y-level.
@@ -50,24 +49,24 @@ public class OreOracleOverlay {
     /**
      * Render the overlay. Called from HudElementRegistry.
      */
-    public void render(DrawContext context, float tickDelta) {
-        MinecraftClient client = MinecraftClient.getInstance();
+    public void render(GuiGraphicsExtractor context, float tickDelta) {
+        Minecraft client = Minecraft.getInstance();
         ModConfig config = ModConfig.getInstance();
 
         // Don't render if disabled or no player
-        if (!config.isEnabled() || client.player == null || client.world == null) {
+        if (!config.isEnabled() || client.player == null || client.level == null) {
             return;
         }
 
         // Don't render when a screen is open
-        if (client.currentScreen != null) {
+        if (client.gui.screen() != null) {
             return;
         }
 
         // Get current state
         int currentY = (int) client.player.getY();
         Identifier currentBiome = BiomeChecker.getCurrentBiome(client);
-        Dimension currentDimension = Dimension.fromWorld(client.world);
+        Dimension currentDimension = Dimension.fromWorld(client.level);
 
         // Recalculate entries if state changed
         if (currentY != lastY || !biomeEquals(currentBiome, lastBiome) || currentDimension != lastDimension) {
@@ -82,9 +81,9 @@ public class OreOracleOverlay {
             return;
         }
 
-        TextRenderer textRenderer = client.textRenderer;
-        int screenWidth = client.getWindow().getScaledWidth();
-        int screenHeight = client.getWindow().getScaledHeight();
+        Font textRenderer = client.font;
+        int screenWidth = client.getWindow().getGuiScaledWidth();
+        int screenHeight = client.getWindow().getGuiScaledHeight();
 
         // Calculate position
         int overlayWidth = calculateWidth(textRenderer);
@@ -105,7 +104,7 @@ public class OreOracleOverlay {
         // Optional header
         if (config.isShowHudHeader()) {
             String header = "Y: " + lastY;
-            context.drawCenteredTextWithShadow(textRenderer, header, x + overlayWidth / 2, contentY, TEXT_PRIMARY);
+            context.centeredText(textRenderer, header, x + overlayWidth / 2, contentY, TEXT_PRIMARY);
             contentY += LINE_HEIGHT_TEXT + PADDING;
         }
 
@@ -123,11 +122,11 @@ public class OreOracleOverlay {
         int remaining = cachedEntries.size() - entriesToShow;
         if (remaining > 0) {
             String overflow = "+" + remaining + " more";
-            context.drawCenteredTextWithShadow(textRenderer, overflow, x + overlayWidth / 2, contentY, TEXT_MUTED);
+            context.centeredText(textRenderer, overflow, x + overlayWidth / 2, contentY, TEXT_MUTED);
         }
     }
 
-    private void renderOreEntry(DrawContext context, TextRenderer textRenderer, OreEntry entry,
+    private void renderOreEntry(GuiGraphicsExtractor context, Font textRenderer, OreEntry entry,
                                  int x, int y, int availableWidth, ModConfig config) {
         if (config.getDisplayMode() == ModConfig.DisplayMode.ICON) {
             // Icon mode: colored dot + item icon + peak star
@@ -139,13 +138,13 @@ public class OreOracleOverlay {
             int iconX = x + indicatorSize + 2;
             int iconY = y + (LINE_HEIGHT_ICON - ICON_SIZE) / 2;
             ItemStack stack = new ItemStack(entry.ore.getIconItem());
-            context.drawItem(stack, iconX, iconY);
+            context.item(stack, iconX, iconY);
 
             // Draw peak indicator star if at peak
             if (entry.isAtPeak) {
                 int starX = iconX + ICON_SIZE + 1;
-                int starY = y + (LINE_HEIGHT_ICON - textRenderer.fontHeight) / 2;
-                context.drawText(textRenderer, PEAK_INDICATOR.trim(), starX, starY, TEXT_PRIMARY, true);
+                int starY = y + (LINE_HEIGHT_ICON - textRenderer.lineHeight) / 2;
+                context.text(textRenderer, PEAK_INDICATOR.trim(), starX, starY, TEXT_PRIMARY, true);
             }
         } else {
             // Text mode: colored dot + ore name + peak star
@@ -159,7 +158,7 @@ public class OreOracleOverlay {
             context.fill(x, indicatorY, x + indicatorSize, indicatorY + indicatorSize, entry.tier.getColor());
 
             int textX = x + indicatorSize + 4;
-            context.drawText(textRenderer, displayText, textX, y, TEXT_PRIMARY, true);
+            context.text(textRenderer, displayText, textX, y, TEXT_PRIMARY, true);
         }
     }
 
@@ -186,14 +185,14 @@ public class OreOracleOverlay {
         cachedEntries.sort((a, b) -> a.tier.ordinal() - b.tier.ordinal());
     }
 
-    private int calculateWidth(TextRenderer textRenderer) {
+    private int calculateWidth(Font textRenderer) {
         ModConfig config = ModConfig.getInstance();
 
         if (config.getDisplayMode() == ModConfig.DisplayMode.ICON) {
             // Icon mode: padding + indicator + gap + icon + gap + star + padding
             // Fixed width since icons are uniform size
             int indicatorWidth = 6 + 2; // indicator size + gap
-            int starWidth = textRenderer.getWidth(PEAK_INDICATOR.trim()) + 1;
+            int starWidth = textRenderer.width(PEAK_INDICATOR.trim()) + 1;
             return PADDING + indicatorWidth + ICON_SIZE + starWidth + PADDING;
         } else {
             // Text mode: find the widest entry
@@ -203,7 +202,7 @@ public class OreOracleOverlay {
                 if (entry.isAtPeak) {
                     text += PEAK_INDICATOR;
                 }
-                maxTextWidth = Math.max(maxTextWidth, textRenderer.getWidth(text));
+                maxTextWidth = Math.max(maxTextWidth, textRenderer.width(text));
             }
             // Width = padding + indicator + gap + text + padding
             int indicatorWidth = 6 + 4; // indicator size + gap
@@ -275,19 +274,19 @@ public class OreOracleOverlay {
      * @param height    Height of the render area
      * @param tickDelta Partial tick for smooth animations
      */
-    public void renderInBounds(DrawContext context, int x, int y, int width, int height, float tickDelta) {
-        MinecraftClient client = MinecraftClient.getInstance();
+    public void renderInBounds(GuiGraphicsExtractor context, int x, int y, int width, int height, float tickDelta) {
+        Minecraft client = Minecraft.getInstance();
         ModConfig config = ModConfig.getInstance();
 
         // Don't render if disabled or no player
-        if (!config.isEnabled() || client.player == null || client.world == null) {
+        if (!config.isEnabled() || client.player == null || client.level == null) {
             return;
         }
 
         // Get current state
         int currentY = (int) client.player.getY();
         Identifier currentBiome = BiomeChecker.getCurrentBiome(client);
-        Dimension currentDimension = Dimension.fromWorld(client.world);
+        Dimension currentDimension = Dimension.fromWorld(client.level);
 
         // Recalculate entries if state changed
         if (currentY != lastY || !biomeEquals(currentBiome, lastBiome) || currentDimension != lastDimension) {
@@ -302,7 +301,7 @@ public class OreOracleOverlay {
             return;
         }
 
-        TextRenderer textRenderer = client.textRenderer;
+        Font textRenderer = client.font;
 
         // Draw background (no border per STYLE_GUIDE.md)
         context.fill(x, y, x + width, y + height, BG_OVERLAY);
@@ -324,7 +323,7 @@ public class OreOracleOverlay {
         // Optional header
         if (config.isShowHudHeader()) {
             String header = "Y: " + lastY;
-            context.drawCenteredTextWithShadow(textRenderer, header, x + width / 2, contentY, TEXT_PRIMARY);
+            context.centeredText(textRenderer, header, x + width / 2, contentY, TEXT_PRIMARY);
             contentY += LINE_HEIGHT_TEXT + PADDING;
         }
 
@@ -341,7 +340,7 @@ public class OreOracleOverlay {
         int remaining = cachedEntries.size() - entriesToShow;
         if (remaining > 0 && contentY + LINE_HEIGHT_TEXT <= y + height) {
             String overflow = "+" + remaining + " more";
-            context.drawCenteredTextWithShadow(textRenderer, overflow, x + width / 2, contentY, TEXT_MUTED);
+            context.centeredText(textRenderer, overflow, x + width / 2, contentY, TEXT_MUTED);
         }
     }
 

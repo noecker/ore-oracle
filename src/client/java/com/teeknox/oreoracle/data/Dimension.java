@@ -1,7 +1,7 @@
 package com.teeknox.oreoracle.data;
 
-import net.minecraft.util.Identifier;
-import net.minecraft.world.World;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -15,7 +15,7 @@ public enum Dimension {
     private final Identifier id;
 
     Dimension(String path) {
-        this.id = Identifier.of("minecraft", path);
+        this.id = Identifier.fromNamespaceAndPath("minecraft", path);
     }
 
     public Identifier getId() {
@@ -26,10 +26,10 @@ public enum Dimension {
      * Get the dimension from a world's registry key.
      */
     @Nullable
-    public static Dimension fromWorld(World world) {
+    public static Dimension fromWorld(Level world) {
         if (world == null) return null;
 
-        Identifier worldId = world.getRegistryKey().getValue();
+        Identifier worldId = world.dimension().identifier();
 
         for (Dimension dim : values()) {
             if (dim.id.equals(worldId)) {
